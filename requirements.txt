@@ -1,12 +1,5 @@
-anthropic>=0.60
-chromadb>=1.5
-fastapi>=0.115
-uvicorn>=0.34
-jinja2>=3.1
-streamlit>=1.40
-requests>=2.32
-python-multipart>=0.0.20
-python-dotenv>=1.0
-pydantic>=2.10
-pytest>=8.0
-pillow>=11.0
+# 로컬 실행(./run.sh)과 테스트용 — 서비스별 목록을 모두 설치한다.
+# 컨테이너는 requirements/backend.txt · requirements/frontend.txt 만 각각 설치한다.
+-r requirements/backend.txt
+-r requirements/frontend.txt
+-r requirements/dev.txt

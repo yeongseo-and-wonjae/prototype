@@ -50,6 +50,16 @@
 - **RAG**: ChromaDB (로컬) + provider 임베딩. **메타데이터 필터 필수**
 - **DB**: SQLite (데모 단계)
 - **테스트**: pytest
+- **배포**: docker compose — 역할별 컨테이너 셋
+
+| 서비스 | 책임 | 노출 |
+|---|---|---|
+| `chroma` | 검색 인덱스 저장·조회 | 내부만 |
+| `backend` | 규칙 판정 · AI 호출 · API · 환자 웹 | 8000 |
+| `frontend` | 치료사 화면 (백엔드 API만 호출) | 8501 |
+
+의존성도 역할별로 나눈다(`requirements/backend.txt`, `requirements/frontend.txt`) — 치료사 화면 이미지에 AI·DB 라이브러리를 넣지 않는다.
+상태는 볼륨 두 개(`rehabtalk-data`, `chroma-data`)에만 둔다. 컨테이너는 언제 지워도 된다.
 
 ---
 
@@ -93,6 +103,11 @@ rehabtalk/
 │   ├─ standard_protocol.json  공개 프로토콜 기반 표준본 (회전근개)
 │   ├─ exercises.json          운동 라이브러리 + 태그 (초기 30개)
 │   └─ seed.json               데모 환자 3명
+├─ docker/
+│   ├─ backend.Dockerfile
+│   └─ frontend.Dockerfile
+├─ docker-compose.yml
+├─ requirements/               서비스별 의존성 (backend / frontend / dev)
 └─ tests/test_rules.py
 ```
 

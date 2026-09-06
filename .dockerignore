@@ -1,0 +1,13 @@
+.venv/
+.git/
+.chroma/
+.pytest_cache/
+__pycache__/
+*.pyc
+.env
+data/rehabtalk.db
+tests/
+docs/
+reference/
+*.md
+!README.md

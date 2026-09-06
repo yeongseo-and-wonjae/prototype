@@ -8,8 +8,11 @@
 
 ## 실행
 
+### Docker (권장)
+
 ```bash
-./run.sh
+cp .env.example .env      # UPSTAGE_API_KEY 채우기 (비워도 목업으로 돕니다)
+docker compose up -d --build
 ```
 
 | 화면 | 주소 |
@@ -17,6 +20,25 @@
 | 치료사 (Streamlit) | http://localhost:8501 |
 | 환자 모바일 웹 | http://localhost:8000/p/tok_kim62 |
 | API 문서 | http://localhost:8000/docs |
+
+8000·8501번을 이미 쓰고 있다면 `.env`에서 바꿉니다. 환자 링크도 따라갑니다.
+
+```bash
+BACKEND_PORT=18000
+FRONTEND_PORT=18501
+```
+
+```bash
+docker compose logs -f backend    # 로그
+docker compose down               # 정지 (데이터는 볼륨에 남습니다)
+docker compose down -v            # 데이터까지 초기화
+```
+
+### 로컬 (Docker 없이)
+
+```bash
+./run.sh
+```
 
 ## AI 모드
 
@@ -60,6 +82,24 @@ backend/lib/     sanitize(PII 제거) · db(SQLite) · notify(알림톡 미리�
 backend/api/     FastAPI 라우터 + 환자 모바일 웹(Jinja2)
 frontend/        Streamlit — 표시와 입력만. 규칙 검사도 AI 호출도 하지 않음
 ```
+
+### 컨테이너 (역할별로 하나씩)
+
+| 서비스 | 책임 | 노출 |
+|---|---|---|
+| `chroma` | 검색 인덱스 저장·조회 | 내부만 |
+| `backend` | 규칙 판정 · AI 호출 · API · 환자 웹 | 8000 |
+| `frontend` | 치료사 화면 (백엔드 API만 호출) | 8501 |
+
+의존성도 역할별로 나눠 둡니다 — `requirements/backend.txt`, `requirements/frontend.txt`.
+치료사 화면 이미지에는 AI·DB 라이브러리가 들어가지 않습니다.
+
+상태는 두 볼륨에만 있습니다.
+
+| 볼륨 | 내용 |
+|---|---|
+| `rehabtalk-data` | SQLite — 환자·프로토콜·처방·피드백 |
+| `chroma-data` | 검색 인덱스 |
 
 파이프라인 순서는 항상 `sanitize → 검색 → AI → rules.check → 화면`입니다.
 AI 출력은 규칙 검사를 통과해야만 화면에 뜹니다.

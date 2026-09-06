@@ -66,6 +66,12 @@ def test_draft_is_checked_by_rules():
         assert cut["rule_id"].startswith("RC-P1-")
 
 
+def test_embeddings_are_arrays_for_http_chroma():
+    """chroma를 HTTP로 붙이면 임베딩에 .tolist()를 호출한다 — 리스트를 주면 검색이 조용히 죽는다."""
+    vectors = retrieve._embedding_fn()(["회전근개 1단계"])
+    assert hasattr(vectors[0], "tolist"), type(vectors[0])
+
+
 def test_search_uses_provider_embeddings():
     if client.provider() != "upstage":
         pytest.skip("임베딩은 Upstage에서만 사용합니다")

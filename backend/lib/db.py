@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -10,7 +11,7 @@ from pathlib import Path
 from ..core.schemas import Feedback, InboxItem, Patient, Protocol
 
 ROOT = Path(__file__).resolve().parents[2]
-DB_PATH = ROOT / "data" / "rehabtalk.db"
+DB_PATH = Path(os.getenv("REHABTALK_DB", ROOT / "data" / "rehabtalk.db"))
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS patients      (id TEXT PRIMARY KEY, token TEXT UNIQUE, body TEXT);
@@ -31,6 +32,7 @@ def connect() -> sqlite3.Connection:
 
 
 def init(force: bool = False) -> None:
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     if force and DB_PATH.exists():
         DB_PATH.unlink()
     fresh = not DB_PATH.exists()

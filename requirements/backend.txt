@@ -1,0 +1,10 @@
+# backend — 규칙 판정 · AI 호출 · API · 환자 웹
+fastapi>=0.115
+uvicorn[standard]>=0.34
+jinja2>=3.1
+python-multipart>=0.0.20
+pydantic>=2.10
+python-dotenv>=1.0
+requests>=2.32
+chromadb>=1.5
+anthropic>=0.60          # AI_PROVIDER=anthropic 일 때만 사용

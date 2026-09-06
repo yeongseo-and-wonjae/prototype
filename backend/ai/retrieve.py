@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import os
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -16,7 +17,9 @@ from pathlib import Path
 from . import client
 
 DATA = Path(__file__).resolve().parents[2] / "data"
-CHROMA_DIR = Path(__file__).resolve().parents[2] / ".chroma"
+CHROMA_DIR = Path(os.getenv("CHROMA_DIR", Path(__file__).resolve().parents[2] / ".chroma"))
+CHROMA_HOST = os.getenv("CHROMA_HOST")          # 있으면 별도 컨테이너의 인덱스를 쓴다
+CHROMA_PORT = int(os.getenv("CHROMA_PORT", "8000"))
 HASH_DIM = 256
 
 
@@ -60,9 +63,14 @@ def _embedding_fn():
         def embed_query(self, input):  # noqa: A002
             return self._embed(list(input), "query")
 
-        def _embed(self, texts: list[str], kind: str) -> list[list[float]]:
+        def _embed(self, texts: list[str], kind: str):
+            import numpy as np
+
             vectors = client.embed(texts, kind)
-            return vectors if vectors is not None else [_hash_vec(t) for t in texts]
+            if vectors is None:
+                vectors = [_hash_vec(t) for t in texts]
+            # chroma HttpClient 는 배열에 .tolist() 를 호출한다 — 리스트를 주면 깨진다
+            return [np.asarray(v, dtype=np.float32) for v in vectors]
 
         def get_config(self) -> dict:
             return {"backend": backend_name()}
@@ -91,7 +99,10 @@ EVIDENCE_CARDS = [
 def _collection():
     import chromadb
 
-    chroma = chromadb.PersistentClient(path=str(CHROMA_DIR))
+    if CHROMA_HOST:                                # docker compose: chroma 서비스
+        chroma = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
+    else:                                          # 로컬 실행: 파일로 보관
+        chroma = chromadb.PersistentClient(path=str(CHROMA_DIR))
     col = chroma.get_or_create_collection(
         name=f"rehab_evidence_{backend_name()}", embedding_function=_embedding_fn()
     )

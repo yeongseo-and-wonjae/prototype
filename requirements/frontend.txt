@@ -1,0 +1,3 @@
+# frontend — 치료사 화면. 백엔드 API만 호출하므로 의존성이 얇다
+streamlit>=1.40
+requests>=2.32
