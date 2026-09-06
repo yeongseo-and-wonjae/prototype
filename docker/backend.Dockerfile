@@ -22,8 +22,9 @@ USER app
 ENV REHABTALK_DB=/var/lib/rehabtalk/rehabtalk.db \
     CHROMA_DIR=/var/lib/rehabtalk/chroma
 
+# PORT를 주면 그 포트로 뜬다 (Render 등 PaaS). 없으면 8000 — compose·로컬은 그대로다.
 EXPOSE 8000
 HEALTHCHECK --interval=10s --timeout=5s --start-period=20s --retries=5 \
-  CMD python -c "import urllib.request as u; u.urlopen('http://127.0.0.1:8000/api/health', timeout=4)"
+  CMD python -c "import os,urllib.request as u; u.urlopen('http://127.0.0.1:%s/api/health' % os.getenv('PORT','8000'), timeout=4)"
 
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

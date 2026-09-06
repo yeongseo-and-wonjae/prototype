@@ -1,7 +1,7 @@
-"""추천 → 담기 → 세트 평가 → 적용(카카오톡). 세팅~발송 60초가 목표.
+"""추천 → 고르기 → 세트 평가 → 적용(카카오톡).
 
-담기/빼기는 fragment 안에서 처리한다 — 한 번 누를 때마다 화면 전체가
-다시 그려지지 않게. 초안은 화면에 들어오면 알아서 만든다.
+한 화면에 같은 운동이 두 번 나오지 않게 표 하나로 고른다.
+판정과 적용 버튼은 맨 위에 붙여 스크롤 없이 결정한다.
 """
 
 from __future__ import annotations
@@ -19,7 +19,6 @@ st.title("오늘의 처방")
 ui.steps("처방")
 ui.patient_header(patient)
 
-# 화면에 들어오면 초안을 알아서 만든다 (환자가 바뀌면 다시)
 if st.session_state.get("draft_for") != patient["id"]:
     st.session_state.pop("sent", None)
     st.session_state["started_at"] = time.time()
@@ -27,7 +26,6 @@ if st.session_state.get("draft_for") != patient["id"]:
         st.session_state["draft"] = ui.api("POST", "/api/plan/draft",
                                            json={"patient_id": patient["id"]})
     st.session_state["draft_for"] = patient["id"]
-    # 백지에서 시작하지 않게 — 규칙을 통과하고 '확인 필요'가 아닌 것은 미리 담아 둔다
     st.session_state["cart"] = [
         c["name"] for c in st.session_state["draft"]["draft"]["passed"] if not c.get("note")
     ]
@@ -36,8 +34,8 @@ data = st.session_state["draft"]
 draft, slot, meta = data["draft"], data["slot"], data["protocol"]
 
 badge = f'{meta["reviewed_by"]} 확인' if meta["reviewed_by"] else "⚠️ 미확정 프로토콜"
-head, redo = st.columns([4, 1])
-with head:
+info, redo = st.columns([4, 1])
+with info:
     st.markdown(
         ui.tag(f'수술 후 {data["weeks_since_surgery"]}주', "on")
         + ui.tag(f'{draft["phase"]}단계', "on")
@@ -55,123 +53,121 @@ if draft["red_flag"]:
 
 
 @st.fragment
-def cart_and_review() -> None:
-    """담기/빼기와 세트 평가. 이 안에서만 다시 그려진다."""
+def picker() -> None:
+    """고르기 + 판정. 표를 건드릴 때 이 안에서만 다시 그린다."""
     cart_names = st.session_state.setdefault("cart", [])
     by_name = {c["name"]: c for c in draft["passed"]}
-    cart = [by_name[n] for n in cart_names if n in by_name]
 
+    # 판정과 적용 버튼이 표 길이에 밀리지 않게 자리를 먼저 잡아둔다
+    verdict_slot = st.container()
+
+    has_note = any(c.get("note") for c in draft["passed"])
+    rows = [{
+        "보냄": ex["name"] in cart_names,
+        "운동": ex["name"],
+        "유형": ex["type"],
+        "용량": ex["dose"],
+        "각도": f'{ex["rom"]}°' if ex["rom"] else "—",
+        "분": ex["minutes"],
+        "영상": bool(ex.get("video_url")),
+        "환자에게 보이는 설명": ex["patient_desc"],
+        **({"확인": ex.get("note") or ""} if has_note else {}),
+    } for ex in draft["passed"]]
+
+    edited = st.data_editor(
+        rows, key="picker_table", hide_index=True, use_container_width=True,
+        row_height=44,                                  # 진료 중 빠르게 누르는 화면 — 넓게
+        height=min(46 + 44 * len(rows), 480),           # 길어지면 표 안에서 스크롤
+        disabled=[c for c in rows[0] if c != "보냄"] if rows else True,
+        column_config={
+            "보냄": st.column_config.CheckboxColumn("보냄", width="small",
+                                                   help="체크한 운동만 환자에게 갑니다"),
+            "운동": st.column_config.TextColumn(width="medium"),
+            "유형": st.column_config.TextColumn(width="small"),
+            "용량": st.column_config.TextColumn(width="medium"),
+            "각도": st.column_config.TextColumn(width="small"),
+            "분": st.column_config.NumberColumn(width="small", format="%d분"),
+            "영상": st.column_config.CheckboxColumn("영상", width="small",
+                                                   help="시범 영상이 등록된 운동"),
+            "환자에게 보이는 설명": st.column_config.TextColumn(width="large"),
+            "확인": st.column_config.TextColumn("확인 필요", width="small"),
+        },
+    )
+
+    picked = [r["운동"] for r in edited if r["보냄"]]
+    if picked != cart_names:
+        st.session_state["cart"] = picked
+        st.rerun(scope="fragment")
+
+    cart = [by_name[n] for n in picked if n in by_name]
     review = ui.api("POST", "/api/plan/review",
                     json={"patient_id": patient["id"], "exercises": cart})["review"]
+    st.session_state["review"] = review
 
-    left, right = st.columns([1.25, 1], gap="large")
+    coverage = "".join(ui.tag(f'{k} {"✓" if v else "—"}', "on" if v else "warn")
+                       for k, v in review["coverage"].items())
+    elapsed = time.time() - st.session_state.get("started_at", time.time())
 
-    with left:
-        head, bulk = st.columns([3, 2])
-        with head:
-            ui.section("추천 운동", len(draft["passed"]))
-        with bulk:
-            a, b = st.columns(2)
-            if a.button("모두 담기", use_container_width=True):
-                st.session_state["cart"] = [c["name"] for c in draft["passed"]]
-                st.rerun(scope="fragment")
-            if b.button("비우기", use_container_width=True):
-                st.session_state["cart"] = []
-                st.rerun(scope="fragment")
+    with verdict_slot:                                  # 표 위에 그린다
+        ui.summary_bar(
+            "발송 가능" if review["ok"] else "발송 불가",
+            blocked=not review["ok"],
+            items=[("개", review["count"]), ("분", review["total_minutes"]),
+                   ("영상 없음", len(review["videos_missing"]))],
+            chips=coverage)
+        act, note = st.columns([1, 2])
+        with act:
+            if st.button(f'적용하기 — 카카오톡으로 보내기 ({review["count"]}개)',
+                         type="primary", disabled=not review["ok"], use_container_width=True):
+                st.session_state["sent"] = ui.api(
+                    "POST", "/api/plan/send",
+                    json={"patient_id": patient["id"], "exercises": cart,
+                          "elapsed_seconds": round(elapsed, 1)})
+                st.rerun(scope="app")
+        with note:
+            st.markdown(ui.tag(f"초안 후 {elapsed:.0f}초 경과 · 목표 60초",
+                               "on" if elapsed <= 60 else "warn"), unsafe_allow_html=True)
+            if not review["ok"]:
+                st.caption("**막음**이 있어 보낼 수 없습니다. 아래에서 해당 운동의 체크를 해제하세요.")
 
-        for i, ex in enumerate(draft["passed"]):
-            picked = ex["name"] in cart_names
-            rom = f' · {ex["rom"]}°까지' if ex["rom"] else ""
-            chips = ui.tag(ex["type"]) + ui.tag(f'출처 {ex["source"]}')
-            chips += ui.tag("영상", "on") if ex.get("video_url") else ui.tag("영상 없음")
-            if ex.get("note"):
-                chips += ui.tag(ex["note"], "warn")
-
-            body, action = st.columns([4, 1])
-            with body:
-                ui.card(
-                    f'<b style="font-size:1.02rem">{ex["name"]}</b>'
-                    f'<span class="rt-sub">{rom} · {ex["dose"]} · {ex["minutes"]}분</span>'
-                    f'<div style="margin-top:5px">{chips}</div>'
-                    f'<div class="rt-sub" style="margin-top:3px">{ex["patient_desc"]}</div>',
-                    "ok" if picked else "flat")
-            with action:
-                if picked:
-                    if st.button("빼기", key=f"rm{i}", use_container_width=True):
-                        st.session_state["cart"] = [n for n in cart_names if n != ex["name"]]
-                        st.rerun(scope="fragment")
-                elif st.button("담기", key=f"add{i}", type="primary", use_container_width=True):
-                    st.session_state["cart"] = cart_names + [ex["name"]]
-                    st.rerun(scope="fragment")
-
-    with right:
-        ui.section("담은 운동", review["count"])
-        if not cart:
-            st.caption("왼쪽에서 **담기**를 눌러 오늘 보낼 운동을 고르세요.")
-        for ex in cart:
-            st.markdown(
-                f'<div class="rt-card rt-ok" style="padding:8px 12px;margin-bottom:6px">'
-                f'<b>{ex["name"]}</b> <span class="rt-sub">· {ex["dose"]} · {ex["minutes"]}분</span>'
-                f'{"" if ex.get("video_url") else " " + ui.tag("영상 없음")}</div>',
-                unsafe_allow_html=True)
-
-        ui.section("세트 전체 평가")
-        ui.stats([
-            ("판정", "발송 가능" if review["ok"] else "발송 불가", "safe" if review["ok"] else "alert"),
-            ("운동", review["count"], "ink"),
-            ("하루", f'{review["total_minutes"]}분', "ink"),
-        ])
-        if review["coverage"]:
-            st.markdown("".join(ui.tag(f'{k} {"✓" if v else "—"}', "on" if v else "warn")
-                                for k, v in review["coverage"].items()), unsafe_allow_html=True)
-
-        style = {"막음": "cut", "주의": "adj", "정보": "flat"}
-        for issue in review["issues"]:
-            ui.card(f'<b>{issue["level"]}</b> · {issue["message"]}<br>'
-                    f'<span class="rt-rule{" warn" if issue["level"] == "주의" else ""}">'
-                    f'{issue["rule_id"]}</span>', style.get(issue["level"], "flat"))
-        if not review["issues"]:
-            st.caption("걸린 항목이 없습니다.")
-
-        st.write("")
-        elapsed = time.time() - st.session_state.get("started_at", time.time())
-        if st.button(f'적용하기 — 카카오톡으로 보내기 ({review["count"]}개)',
-                     type="primary", disabled=not review["ok"], use_container_width=True):
-            st.session_state["sent"] = ui.api(
-                "POST", "/api/plan/send",
-                json={"patient_id": patient["id"], "exercises": cart,
-                      "elapsed_seconds": round(elapsed, 1)})
-            st.rerun(scope="app")
-        st.markdown(ui.tag(f"초안 후 {elapsed:.0f}초 경과 · 목표 60초",
-                           "on" if elapsed <= 60 else "warn"), unsafe_allow_html=True)
-        if not review["ok"]:
-            st.caption("세트 평가에 **막음**이 있어 보낼 수 없습니다. 위 항목을 빼주세요.")
+    blocking = [i for i in review["issues"] if i["level"] == "막음"]
+    others = [i for i in review["issues"] if i["level"] != "막음"]
+    for issue in blocking:
+        ui.card(f'<b>막음</b> · {issue["message"]}<br>'
+                f'<span class="rt-rule">{issue["rule_id"]}</span>', "cut")
+    if others:
+        with st.expander(f"주의·정보 {len(others)}건"):
+            for issue in others:
+                ui.card(f'<b>{issue["level"]}</b> · {issue["message"]}<br>'
+                        f'<span class="rt-rule warn">{issue["rule_id"]}</span>',
+                        "adj" if issue["level"] == "주의" else "flat")
 
 
 if "sent" not in st.session_state:
-    cart_and_review()
+    picker()
 
-    with st.expander("규칙이 이미 걸러낸 것 "
-                     f'({len(draft["excluded"]) + len(draft["adjusted"])})'):
-        for cut in draft["excluded"]:
-            ui.card(f'<b>✕ {cut["candidate"]["name"]}</b> — {cut["cut_reason"]}<br>'
-                    f'<span class="rt-rule">{cut["rule_id"]}</span>', "cut")
-        for adj in draft["adjusted"]:
-            ui.card(f'<b>⤳ {adj["candidate"]["name"]}</b> — {adj["before"]} → '
-                    f'<b>{adj["after"]}</b><br>'
-                    f'<span class="rt-rule warn">{adj["rule_id"]}</span>', "adj")
-        if not draft["excluded"] and not draft["adjusted"]:
-            st.caption("걸린 항목이 없습니다.")
-
-    with st.expander(f'{draft["phase"]}단계 제한 · AI 입력 · 검색 근거'):
-        st.markdown(f'**보조기** {slot["brace"] or "—"}\n\n'
-                    f'**금지** {", ".join(slot["forbidden"]) or "—"}\n\n**각도 상한** '
-                    + (", ".join(f"{k} {v}°" for k, v in slot["rom_caps"].items()) or "—"))
-        st.markdown("**AI에 넘어간 정보** (식별정보 없음)")
-        st.json(data["llm_input"], expanded=False)
-        st.markdown(f'**검색된 근거 {len(data["evidence"])}건**')
-        for e in data["evidence"]:
-            st.markdown(f"- `{e['kind']}` ({e['source']}) {e['text']}")
+    cut_count = len(draft["excluded"]) + len(draft["adjusted"])
+    detail, limits = st.columns(2)
+    with detail:
+        with st.expander(f"규칙이 이미 걸러낸 것 ({cut_count})"):
+            for cut in draft["excluded"]:
+                ui.card(f'<b>✕ {cut["candidate"]["name"]}</b> — {cut["cut_reason"]}<br>'
+                        f'<span class="rt-rule">{cut["rule_id"]}</span>', "cut")
+            for adj in draft["adjusted"]:
+                ui.card(f'<b>⤳ {adj["candidate"]["name"]}</b> — {adj["before"]} → '
+                        f'<b>{adj["after"]}</b><br>'
+                        f'<span class="rt-rule warn">{adj["rule_id"]}</span>', "adj")
+            if not cut_count:
+                st.caption("걸린 항목이 없습니다.")
+    with limits:
+        with st.expander(f'{draft["phase"]}단계 제한 · AI 입력 · 검색 근거 {len(data["evidence"])}건'):
+            st.markdown(f'**보조기** {slot["brace"] or "—"}\n\n'
+                        f'**금지** {", ".join(slot["forbidden"]) or "—"}\n\n**각도 상한** '
+                        + (", ".join(f"{k} {v}°" for k, v in slot["rom_caps"].items()) or "—"))
+            st.markdown("**AI에 넘어간 정보** (식별정보 없음)")
+            st.json(data["llm_input"], expanded=False)
+            for e in data["evidence"]:
+                st.markdown(f"- `{e['kind']}` ({e['source']}) {e['text']}")
 
 else:
     sent = st.session_state["sent"]

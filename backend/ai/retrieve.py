@@ -82,17 +82,20 @@ def _embedding_fn():
     return RehabEmbedding()
 
 
-#: 문헌 근거 카드. 데모용 요약이며 실제 인용으로 쓸 수 없다.
-EVIDENCE_CARDS = [
-    {"id": "ev01", "phase": 1, "text": "봉합 직후 6주간은 수동 관절운동만 시행하고 능동 거상은 피한다. 조기 능동 운동은 재파열 위험을 높인다.", "source": "문헌 요약(데모)"},
-    {"id": "ev02", "phase": 1, "text": "진자 운동은 통증 감소와 관절 유착 예방에 도움이 되며 1단계 표준 항목으로 권장된다.", "source": "문헌 요약(데모)"},
-    {"id": "ev03", "phase": 1, "text": "대형·광범위 파열에서는 외회전 각도를 더 보수적으로 제한하고 보조기 착용 기간을 늘린다.", "source": "문헌 요약(데모)"},
-    {"id": "ev04", "phase": 2, "text": "6주 이후 능동보조 운동으로 전환하며 통증 없는 범위 안에서 점진적으로 각도를 늘린다.", "source": "문헌 요약(데모)"},
-    {"id": "ev05", "phase": 2, "text": "등척성 수축은 저항 운동 전 단계로 안전하게 근력을 유지하는 방법이다.", "source": "문헌 요약(데모)"},
-    {"id": "ev06", "phase": 3, "text": "12주 이후 가벼운 저항밴드 운동을 시작하되 통증과 보상 동작을 관찰한다.", "source": "문헌 요약(데모)"},
-    {"id": "ev07", "phase": 4, "text": "16주 이후 기능적 과제와 지구력 훈련으로 넘어가며 스포츠 복귀는 집도의 확인 후 결정한다.", "source": "문헌 요약(데모)"},
-    {"id": "ev08", "phase": 2, "text": "2주 이상 가동범위가 정체되면 용량을 늘리기 전에 통증·부종·보상 패턴을 먼저 확인한다.", "source": "문헌 요약(데모)"},
-]
+#: Patient.tear_size → 근거 트랙. 파열 크기에 따라 갈리는 근거를 걸러내기 위한 것이다.
+TEAR_TRACK = {"소형~중형": "소~중", "대형": "대·광범위", "광범위": "대·광범위"}
+
+
+@lru_cache(maxsize=1)
+def _evidence() -> tuple[list[dict], dict[str, dict]]:
+    """근거 카드와 출처 레지스트리. 카드에는 출처 id만 두고 표시할 때 조인한다."""
+    cards = json.loads((DATA / "evidence.json").read_text(encoding="utf-8"))["cards"]
+    sources = {s["id"]: s for s in
+               json.loads((DATA / "sources.json").read_text(encoding="utf-8"))["sources"]}
+    unknown = [c["id"] for c in cards if c["source_id"] not in sources]
+    if unknown:                                    # 출처 없는 카드는 색인하지 않는다
+        raise ValueError(f"출처 미등록 카드: {unknown}")
+    return cards, sources
 
 
 @lru_cache(maxsize=1)
@@ -104,7 +107,7 @@ def _collection():
     else:                                          # 로컬 실행: 파일로 보관
         chroma = chromadb.PersistentClient(path=str(CHROMA_DIR))
     col = chroma.get_or_create_collection(
-        name=f"rehab_evidence_{backend_name()}", embedding_function=_embedding_fn()
+        name=f"rehab_evidence_v2_{backend_name()}", embedding_function=_embedding_fn()
     )
     if col.count() == 0:
         _index(col)
@@ -121,39 +124,68 @@ def _index(col) -> None:
             f"보조기: {slot['brace']}. 허용: {', '.join(slot['allowed'])}. "
             f"금지: {', '.join(slot['forbidden'])}. {slot['source_text']}"
         )
-        metas.append({"surgery": "rotator_cuff", "phase": slot["phase"], "kind": "protocol", "source": "표준본"})
+        metas.append({
+            "surgery": "rotator_cuff", "kind": "protocol",
+            "phase_min": slot["phase"], "phase_max": slot["phase"],
+            "tear_track": "공통", "evidence_level": "표준본",
+            "source": "표준본", "source_id": "standard", "url": "", "needs_review": False,
+        })
         ids.append(f"proto-{slot['phase']}")
 
-    for card in EVIDENCE_CARDS:
+    cards, sources = _evidence()
+    for card in cards:
+        src = sources[card["source_id"]]
         docs.append(card["text"])
-        metas.append({"surgery": "rotator_cuff", "phase": card["phase"], "kind": "evidence", "source": card["source"]})
+        metas.append({
+            "surgery": card.get("surgery", "rotator_cuff"), "kind": "evidence",
+            "phase_min": card["phase_min"], "phase_max": card["phase_max"],
+            "tear_track": card["tear_track"], "evidence_level": card["evidence_level"],
+            "source": src["label"], "source_id": card["source_id"],
+            "url": src["url"], "needs_review": card["needs_review"],
+        })
         ids.append(card["id"])
 
     col.add(documents=docs, metadatas=metas, ids=ids)
 
 
-def search(query: str, phase: int, surgery: str = "rotator_cuff", n_results: int = 5) -> list[dict]:
-    """메타데이터 필터 → 의미 검색. 실패하면 빈 목록 (지어내지 않는다)."""
+def search(query: str, phase: int, tear_size: str | None = None,
+           surgery: str = "rotator_cuff", n_results: int = 5) -> list[dict]:
+    """메타데이터 필터 → 의미 검색. 실패하면 빈 목록 (지어내지 않는다).
+
+    카드가 걸쳐 있는 단계를 phase_min~phase_max로 두었으므로 정확일치가 아니라 범위로 본다.
+    tear_size를 주면 그 트랙과 '공통' 카드만 남긴다 — 대파열 환자에게
+    소~중 파열에서만 성립하는 근거가 딸려가지 않게 하려는 것이다.
+    """
+    where = [
+        {"surgery": surgery},
+        {"phase_min": {"$lte": phase}},
+        {"phase_max": {"$gte": phase}},
+    ]
+    track = TEAR_TRACK.get(tear_size or "")
+    if track:
+        where.append({"tear_track": {"$in": [track, "공통"]}})
+
     try:
         col = _collection()
-        res = col.query(
-            query_texts=[query],
-            where={"$and": [{"surgery": surgery}, {"phase": phase}]},
-            n_results=n_results,
-        )
+        res = col.query(query_texts=[query], where={"$and": where}, n_results=n_results)
     except Exception as exc:  # 색인이 없거나 chroma가 안 뜨면 검색 없이 진행한다
         print(f"[retrieve] 검색 건너뜀: {exc}")
         return []
 
     out = []
     for doc, meta in zip(res["documents"][0], res["metadatas"][0]):
-        out.append({"text": doc, "kind": meta["kind"], "source": meta["source"], "phase": meta["phase"]})
+        out.append({
+            "text": doc, "kind": meta["kind"], "source": meta["source"],
+            "evidence_level": meta["evidence_level"], "tear_track": meta["tear_track"],
+            "url": meta["url"], "needs_review": bool(meta["needs_review"]),
+        })
     return out
 
 
 def reset(wipe: bool = False) -> None:
     """캐시를 비운다. wipe=True면 색인 파일까지 지운다 (데이터를 고친 뒤)."""
     _collection.cache_clear()
+    _evidence.cache_clear()
     if wipe:
         import shutil
 

@@ -53,12 +53,10 @@ with left:
         st.caption("사진을 다시 올리면 여기 표시됩니다.")
 
     if result["conflicts"]:
-        ui.section("표준본과 다른 점", len(result["conflicts"]))
-        st.caption("기간·보조기는 병원 값을 따르고, 금지·상한은 안전한 쪽으로 합칩니다.")
-        for c in result["conflicts"][:12]:
-            ui.card(c, "adj")
-        if len(result["conflicts"]) > 12:
-            st.caption(f"… 외 {len(result['conflicts']) - 12}건")
+        with st.expander(f'표준본과 다른 점 {len(result["conflicts"])}건'):
+            st.caption("기간·보조기는 병원 값을 따르고, 금지·상한은 안전한 쪽으로 합칩니다.")
+            for c in result["conflicts"]:
+                ui.card(c, "adj")
 
 with right:
     ui.section("추출된 6칸 — 사진과 대조해 고치세요", len(protocol["slots"]))

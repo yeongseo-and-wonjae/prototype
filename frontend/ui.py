@@ -73,6 +73,17 @@ CSS = f"""
                 border-radius:99px; padding:1px 8px; }}
   .rt-sec .bar {{ flex:1; height:1px; background:{LINE}; }}
 
+  /* ── 요약 바 (화면 맨 위에 붙여 스크롤 없이 결정) ─── */
+  .rt-bar {{ display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+             border:1px solid {LINE}; border-left:4px solid {SAFE}; border-radius:12px;
+             padding:12px 18px; background:#fff; margin-bottom:14px; }}
+  .rt-bar.blocked {{ border-left-color:{ALERT}; background:#FDF6F5; }}
+  .rt-bar .verdict {{ font-size:1.25rem; font-weight:700; letter-spacing:-.02em; color:{SAFE}; }}
+  .rt-bar.blocked .verdict {{ color:{ALERT}; }}
+  .rt-bar .num {{ font-size:1.1rem; font-weight:700; }}
+  .rt-bar .lbl {{ font-size:.78rem; color:{MUTED}; margin-left:3px; }}
+  .rt-bar .sep {{ width:1px; height:26px; background:{LINE}; }}
+
   /* ── 통계 ─────────────────────────────────────────── */
   .rt-stats {{ display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; }}
   .rt-stat {{ flex:1; min-width:96px; border:1px solid {LINE}; border-radius:10px;
@@ -152,6 +163,19 @@ def stats(items: list[tuple[str, object, str]]) -> None:
         for label, value, tone in items
     )
     st.markdown(f'<div class="rt-stats">{cells}</div>', unsafe_allow_html=True)
+
+
+def summary_bar(verdict: str, blocked: bool, items: list[tuple[str, str]],
+                chips: str = "") -> None:
+    """판정과 숫자를 한 줄로. 결정에 필요한 것만 위에 붙인다."""
+    cells = "".join(
+        f'<span><span class="num">{value}</span><span class="lbl">{label}</span></span>'
+        f'<span class="sep"></span>' for label, value in items)
+    st.markdown(
+        f'<div class="rt-bar {"blocked" if blocked else ""}">'
+        f'<span class="verdict">{verdict}</span><span class="sep"></span>'
+        f'{cells}<span>{chips}</span></div>',
+        unsafe_allow_html=True)
 
 
 def card(body: str, tone: str = "flat") -> None:

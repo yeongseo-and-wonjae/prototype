@@ -1,0 +1,237 @@
+{
+  "_note": "근거 출처 레지스트리. 검색 대상이 아니다 — evidence.json의 source_id가 여기를 가리키고, 화면에 출처를 표시할 때 조인한다. 원문 PDF는 저장소에 두지 않는다.",
+  "_checked": "2026-09-06",
+  "_rule": "병원 프로토콜은 대부분 저작권을 보유한다. 문장을 복제하지 않고 수치·사실만 옮겨 적었으며 원문은 url로 연결한다.",
+  "sources": [
+    {
+      "id": "aaos-2025",
+      "label": "AAOS 진료지침 2025",
+      "org": "American Academy of Orthopaedic Surgeons",
+      "year": 2025,
+      "title": "Management of Rotator Cuff Injuries: Evidence-Based Clinical Practice Guideline",
+      "url": "https://www.aaos.org/globalassets/quality-and-practice-resources/rotator-cuff/rotator-cuff-2025/rotator-cuff-cpg.pdf",
+      "kind": "가이드라인",
+      "region": "해외",
+      "access": "전문 확인",
+      "license": "© AAOS. 원문 재배포 금지 — 수치·권고 사실만 인용",
+      "note": "2019년판을 대체. 2025-08-28 발표."
+    },
+    {
+      "id": "aaos-2019",
+      "label": "AAOS 진료지침 2019",
+      "org": "American Academy of Orthopaedic Surgeons",
+      "year": 2019,
+      "title": "Management of Rotator Cuff Injuries: Evidence-Based Clinical Practice Guideline",
+      "url": "https://www.aaos.org/globalassets/quality-and-practice-resources/rotator-cuff/management-of-rotator-cuff-injuries-2.pdf",
+      "kind": "가이드라인",
+      "region": "해외",
+      "access": "전문 확인",
+      "license": "© AAOS. 원문 재배포 금지",
+      "note": "2025년판으로 대체됨. 이력 확인용으로만 둔다."
+    },
+    {
+      "id": "ases-2016",
+      "label": "ASES/ASSET 합의문 2016",
+      "org": "American Society of Shoulder and Elbow Therapists",
+      "year": 2016,
+      "title": "Consensus statement on rehabilitation following arthroscopic rotator cuff repair (Thigpen et al., J Shoulder Elbow Surg 2016;25(4):521-535)",
+      "url": "https://www.jshoulderelbow.org/article/S1058-2746(15)00751-X/abstract",
+      "kind": "합의문",
+      "region": "해외",
+      "access": "초록만 확인 — 전문 미확인",
+      "license": "구독 저널. 초록 범위의 사실만 인용",
+      "note": "단계 골격의 1차 앵커. 전문 확보 후 카드 보강 필요."
+    },
+    {
+      "id": "uw-2017",
+      "label": "UW Health 2017",
+      "org": "UW Health Sports Medicine",
+      "year": 2017,
+      "title": "Rehabilitation Guidelines for Type I and Type II Rotator Cuff Repair and Isolated Subscapularis Repair",
+      "url": "https://bynder.uwhealth.org/m/6a0614ab82d91431/original/Rehab-Guideline-Rotator-Cuff-Repair-and-Isolated-Subscapularis-Repair.pdf",
+      "kind": "병원프로토콜",
+      "region": "해외",
+      "access": "전문 확인",
+      "license": "Copyright 2017 UW Health Sports Medicine. 원문 복제 금지",
+      "note": "각도·주차가 가장 구체적. Type I(소~중) / Type II(대·불량조직) / 단독 견갑하근 세 갈래."
+    },
+    {
+      "id": "bsi-2020",
+      "label": "MGH·Boston Shoulder Institute 2020",
+      "org": "Massachusetts General Hospital / Boston Shoulder Institute",
+      "year": 2020,
+      "title": "Physical Therapy Protocol After Rotator Cuff Repair",
+      "url": "https://bostonshoulderinstitute.com/wp-content/uploads/2020/07/PT-Rotator-Cuff-Reconstruction-AM-JJW.pdf",
+      "kind": "병원프로토콜",
+      "region": "해외",
+      "access": "전문 확인",
+      "license": "Copyright © 2020 MGH, Boston Shoulder Institute, all rights reserved",
+      "note": "파열 크기별 분기(소 4주 / 대 6주)를 서두에 명시."
+    },
+    {
+      "id": "hss",
+      "label": "HSS 재활 지침",
+      "org": "Hospital for Special Surgery, Sports Rehabilitation and Performance Center",
+      "year": null,
+      "title": "Rotator Cuff Repair Guidelines",
+      "url": "https://www.bostonshouldersurgery.com/pdfs/hss-rcr-guidelines-xinning-li.pdf",
+      "kind": "병원프로토콜",
+      "region": "해외",
+      "access": "전문 확인",
+      "license": "Unauthorized reproduction prohibited. 원문 복제 금지",
+      "note": "문서에 발행연도 표기 없음 — 확인 필요."
+    },
+    {
+      "id": "fowler-2015",
+      "label": "Fowler Kennedy 2015",
+      "org": "Fowler Kennedy Sport Medicine Clinic",
+      "year": 2015,
+      "title": "Large Rotator Cuff Repair Protocol",
+      "url": "https://www.fowlerkennedy.com/wp-content/uploads/2023/03/LARGE-ROTATOR-CUFF-REPAIR-PROTOCOL-November-2015.pdf",
+      "kind": "병원프로토콜",
+      "region": "해외",
+      "access": "전문 확인",
+      "license": "저작권 보유 문서. 수치·사실만 인용",
+      "note": "대파열 전용. 확보한 문서 중 가장 보수적."
+    },
+    {
+      "id": "osu-2020",
+      "label": "OSU 2020",
+      "org": "Ohio State University Wexner Medical Center",
+      "year": 2020,
+      "title": "Large-Massive Rotator Cuff Repair Guideline",
+      "url": "https://medicine.osu.edu/-/media/files/medicine/departments/sports-medicine/medical-professionals/shoulder-and-elbow/rotator-cuff-repair_large_massive-2020.pdf",
+      "kind": "병원프로토콜",
+      "region": "해외",
+      "access": "전문 확인",
+      "license": "저작권 보유 문서. 수치·사실만 인용"
+    },
+    {
+      "id": "lahey-2019",
+      "label": "Lahey 2019",
+      "org": "Lahey Hospital & Medical Center",
+      "year": 2019,
+      "title": "Rehabilitation Protocol: Small to Moderate Rotator Cuff Repair",
+      "url": "https://www.lahey.org/-/media/files/lhmc/orthopedics/shoulder/lhmc-small-moderate-rotator-cuff-repair-protocol.pdf",
+      "kind": "병원프로토콜",
+      "region": "해외",
+      "access": "전문 확인",
+      "license": "저작권 보유 문서. 수치·사실만 인용"
+    },
+    {
+      "id": "orthori-2024",
+      "label": "Ortho Rhode Island",
+      "org": "Ortho Rhode Island",
+      "year": 2024,
+      "title": "Traditional Rehabilitation Protocol for Rotator Cuff Repair",
+      "url": "https://www.orthopedicsri.com/wp-content/uploads/2024/05/ORI_Post-Op_Rehab_Protocols_TradRotatorCuffRepair.pdf",
+      "kind": "병원프로토콜",
+      "region": "해외",
+      "access": "전문 확인",
+      "license": "저작권 보유 문서. 수치·사실만 인용",
+      "note": "문서 후반부에 무릎 보조기 문구가 섞여 있다(원문 오류로 보임). 어깨 항목만 인용."
+    },
+    {
+      "id": "tirefort-2019",
+      "label": "Tirefort 2019 RCT",
+      "org": "J Bone Joint Surg / PMC",
+      "year": 2019,
+      "title": "Postoperative Mobilization After Superior Rotator Cuff Repair: Sling Versus No Sling — RCT",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6543787/",
+      "kind": "RCT",
+      "region": "해외",
+      "access": "전문 확인(오픈액세스)",
+      "license": "PMC 공개"
+    },
+    {
+      "id": "sheps-2019",
+      "label": "Sheps 2019 RCT",
+      "org": "Arthroscopy",
+      "year": 2019,
+      "title": "Early Active Motion Versus Sling Immobilization After Arthroscopic Rotator Cuff Repair — RCT",
+      "url": "https://www.arthroscopyjournal.org/article/S0749-8063(18)31023-5/abstract",
+      "kind": "RCT",
+      "region": "해외",
+      "access": "원문 미확인 — AAOS 2025 진료지침의 요약을 통해 확인",
+      "license": "구독 저널"
+    },
+    {
+      "id": "littlewood-2021",
+      "label": "Littlewood 2021 RCT",
+      "org": "AAOS 2025 진료지침 재인용",
+      "year": 2021,
+      "title": "Early mobilization versus sling immobilization after rotator cuff repair",
+      "url": "https://www.aaos.org/globalassets/quality-and-practice-resources/rotator-cuff/rotator-cuff-2025/rotator-cuff-cpg.pdf",
+      "kind": "RCT",
+      "region": "해외",
+      "access": "원문 미확인 — AAOS 2025 진료지침의 요약을 통해 확인",
+      "license": "재인용"
+    },
+    {
+      "id": "jkma-2022",
+      "label": "대한의사협회지 2022 종설",
+      "org": "김정한·서영채, 인제대학교 부산백병원 정형외과",
+      "year": 2022,
+      "title": "어깨 통증의 수술 후 재활 (J Korean Med Assoc 2022;65(11):717-726)",
+      "url": "https://jkma.org/upload/pdf/jkma-2022-65-11-717.pdf",
+      "kind": "종설",
+      "region": "국내",
+      "access": "전문 확인",
+      "license": "CC BY-NC 4.0 — 비영리 조건. 상업 서비스에서는 사실만 인용하고 문장은 복제하지 않는다"
+    },
+    {
+      "id": "jkoa-2019",
+      "label": "대한정형외과학회지 2019 종설",
+      "org": "대한정형외과학회",
+      "year": 2019,
+      "title": "회전근개 봉합술 후 재활 (J Korean Orthop Assoc 2019;54(2):91)",
+      "url": "https://jkoa.org/DOIx.php?id=10.4055/jkoa.2019.54.2.91",
+      "kind": "종설",
+      "region": "국내",
+      "access": "웹 본문 확인",
+      "license": "학회 저작권. 수치·사실만 인용"
+    },
+    {
+      "id": "amc",
+      "label": "서울아산병원 환자 안내",
+      "org": "서울아산병원",
+      "year": null,
+      "title": "회전근개 파열 — 수술 후 관리",
+      "url": "https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=398",
+      "kind": "환자안내",
+      "region": "국내",
+      "access": "웹 본문 확인",
+      "license": "병원 저작물. 사실만 인용",
+      "note": "국내 환자가 실제로 받는 안내 문구. 치료사 화면에서 국내 관행 대조용."
+    }
+  ],
+  "_확인실패": [
+    {
+      "기관": "Brigham and Women's Hospital",
+      "url": "https://www.brighamandwomens.org/assets/BWH/patients-and-families/rehabilitation-services/pdfs/shoulder-rotator-cuff-repair-arthroscopic.pdf",
+      "사유": "PDF 요청이 HTML로 반환됨(차단 추정). 카드 없음"
+    },
+    {
+      "기관": "MGH 본원 프로토콜",
+      "url": "https://www.massgeneral.org/assets/mgh/pdf/orthopaedics/sports-medicine/physical-therapy/rehabilitation-protocol-for-rotator-cuff-repair.pdf",
+      "사유": "301 리다이렉트로 원문 소실. Boston Shoulder Institute 판(bsi-2020)으로 대체"
+    },
+    {
+      "기관": "MOON / Vanderbilt",
+      "url": "https://medschool.cuanschutz.edu/docs/librariesprovider65/eric-mccarty/rehab-protocols/rotator-cuff-repair-moon-protocol.pdf",
+      "사유": "내려받았으나 내용 미검토. 카드 없음"
+    },
+    {
+      "문헌": "Chang 2015 AJSM 메타분석",
+      "사유": "PubMed 접근 차단. 원문 미확인 — 카드 없음"
+    },
+    {
+      "문헌": "BMC Musculoskelet Disord 2023 메타분석",
+      "사유": "Springer 인증 리다이렉트로 접근 실패 — 카드 없음"
+    },
+    {
+      "기관": "국내 서울대·세브란스·삼성서울·건국대",
+      "사유": "공개 안내문 미확인. 자문 치료사를 통한 실물 확보 필요"
+    }
+  ]
+}

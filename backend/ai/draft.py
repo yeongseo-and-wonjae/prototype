@@ -44,13 +44,20 @@ SCHEMA = {
 }
 
 
+def _cite(e: dict) -> str:
+    """근거 한 줄. 등급과 출처를 붙여 모델이 출처 없는 주장을 지어내지 않게 한다."""
+    flag = " [자문 검증 전]" if e["needs_review"] else ""
+    return f"- ({e['evidence_level']} · {e['source']}{flag}) {e['text']}"
+
+
 def draft(clean_patient: dict, slot: ProtocolSlot) -> tuple[list[ExerciseCandidate], list[dict]]:
     """(후보, 검색근거)를 돌려준다. clean_patient는 sanitize를 거친 dict여야 한다."""
     from ..lib.sanitize import assert_clean
 
     assert_clean(clean_patient)
     evidence = retrieve.search(
-        f"{slot.phase}단계 허용 운동, 각도 상한, {clean_patient['tear_size']} 파열", slot.phase
+        f"{slot.phase}단계 허용 운동, 각도 상한, {clean_patient['tear_size']} 파열",
+        slot.phase, tear_size=clean_patient["tear_size"],
     )
 
     if not client.is_live():
@@ -60,7 +67,7 @@ def draft(clean_patient: dict, slot: ProtocolSlot) -> tuple[list[ExerciseCandida
         "draft",
         patient=json.dumps(clean_patient, ensure_ascii=False, default=str),
         slot=slot.model_dump_json(),
-        evidence="\n".join(f"- ({e['source']}) {e['text']}" for e in evidence) or "검색 결과 없음",
+        evidence="\n".join(_cite(e) for e in evidence) or "검색 결과 없음",
         library=json.dumps(
             [{k: e[k] for k in ("name", "type", "rom", "dose", "minutes", "patient_desc", "source")}
              for e in LIBRARY if e["phase"] <= slot.phase + 1],

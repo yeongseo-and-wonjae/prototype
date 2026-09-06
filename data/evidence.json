@@ -1,0 +1,271 @@
+{
+  "_note": "근거 카드. 카드 하나 = 주장 하나. 원문 문장을 복제하지 않고 수치·사실만 옮겨 적었다. 출처 원문은 sources.json의 url로 연결한다.",
+  "_경고": "이 카드는 치료사에게 '왜'를 보여주기 위한 것이다. 안전 판정은 여기서 하지 않는다 — 금지 동작·각도 상한은 standard_protocol.json과 core/rules.py가 검사한다.",
+  "_필드": {
+    "phase_min/phase_max": "적용 단계 범위. 회전근개 1(0~6주)/2(6~12)/3(12~16)/4(16~)",
+    "tear_track": "공통 | 소~중 | 대·광범위 — 파열 크기에 따라 근거가 갈리는 경우",
+    "evidence_level": "가이드라인 > 합의문 > 메타분석 > RCT > 병원프로토콜 > 종설 > 환자안내",
+    "needs_review": "자문 물리치료사 검증 전인 수치. 참고로만 보여주고 규칙에 넣지 않는다"
+  },
+  "cards": [
+    {
+      "id": "ev-aaos25-mob",
+      "claim": "소~중 파열은 조기 가동과 8주까지의 지연 가동 결과가 비슷하다",
+      "text": "소형에서 중형 크기의 전층 회전근개 파열을 관절경으로 봉합한 경우, 조기에 가동을 시작한 환자와 최대 8주까지 늦춘 환자의 임상 결과와 환자보고 결과가 서로 비슷했다. 근거 수준 High, 권고 강도 Strong.",
+      "phase_min": 1, "phase_max": 2, "tear_track": "소~중",
+      "evidence_level": "가이드라인", "source_id": "aaos-2025", "needs_review": false
+    },
+    {
+      "id": "ev-aaos25-sling",
+      "claim": "일부 환자군은 보조기를 바로 떼도 치유가 나빠지지 않았다",
+      "text": "일부 환자군에서는 보조기를 곧바로 줄여 일상동작 범위의 능동 관절운동을 허용해도, 오래 착용한 경우와 치유·기능·환자보고 결과가 비슷했다. 근거 수준 Moderate, 권고 강도 Moderate. 어떤 환자군인지는 술기와 조직 상태로 정해지므로 집도의 지시가 우선한다.",
+      "phase_min": 1, "phase_max": 2, "tear_track": "소~중",
+      "evidence_level": "가이드라인", "source_id": "aaos-2025", "needs_review": false
+    },
+    {
+      "id": "ev-aaos25-size",
+      "claim": "가동을 늦추면 치유율이 높은 경향이며 파열이 클수록 뚜렷하다",
+      "text": "술후 4~8주까지 가동을 늦춘 쪽이 치유율이 더 높은 경향을 보였고 특히 파열이 클수록 그 경향이 뚜렷했다. 다만 회전근개 완전성을 분석한 다섯 편에서 통계적 유의에는 이르지 못했다. 조기 가동은 첫 6개월까지 가동범위가 앞서지만 그 차이는 6개월 무렵 사라진다.",
+      "phase_min": 1, "phase_max": 2, "tear_track": "대·광범위",
+      "evidence_level": "가이드라인", "source_id": "aaos-2025", "needs_review": false
+    },
+    {
+      "id": "ev-aaos25-home",
+      "claim": "소파열은 1회 교육 후 자가 홈운동과 반복 방문 결과가 같았다",
+      "text": "소파열 봉합 후, 물리치료사에게 한 번 교육받고 스스로 하는 홈 프로그램과 감독을 위해 반복 방문하는 경우의 통증·기능 결과가 3개월부터 1년까지 차이가 없었다. 근거 수준 Moderate, 권고 강도 Moderate.",
+      "phase_min": 1, "phase_max": 4, "tear_track": "소~중",
+      "evidence_level": "가이드라인", "source_id": "aaos-2025", "needs_review": false
+    },
+    {
+      "id": "ev-ases-frame",
+      "claim": "2주 고정 → 2~6주 보호된 수동운동 → 능동운동 → 12주 강화",
+      "text": "봉합 후 2주는 엄격히 고정하고, 2~6주 사이에 보호된 수동 관절운동을 단계적으로 도입한다. 그 다음 능동 관절운동을 회복하고, 점진적 근력강화는 술후 12주부터 시작한다.",
+      "phase_min": 1, "phase_max": 3, "tear_track": "공통",
+      "evidence_level": "합의문", "source_id": "ases-2016", "needs_review": false
+    },
+    {
+      "id": "ev-tirefort-sling",
+      "claim": "소~중 파열 80명 RCT: 무슬링군이 초기 가동범위 우수, 6개월 봉합부 완전성은 차이 없음",
+      "text": "3cm 미만 상부 파열 80명을 슬링군과 무슬링군으로 나눈 무작위 연구. 1.5개월에 무슬링군의 외회전 23.5° 대 15.3°, 능동 거상 110.9° 대 97.0°로 앞섰고 3개월에도 거상이 우수했다. 6개월 초음파에서 봉합부 완전성은 두 군이 다르지 않았다.",
+      "phase_min": 1, "phase_max": 2, "tear_track": "소~중",
+      "evidence_level": "RCT", "source_id": "tirefort-2019", "needs_review": false
+    },
+    {
+      "id": "ev-sheps-early",
+      "claim": "전층 파열 206명: 6주 가동범위는 조기 운동군이 앞섰고 12개월 재파열률은 같았다",
+      "text": "전층 파열 206명 중 70%가 3cm 미만이었다. 6주 시점 능동 가동범위는 조기 운동군이 지속 슬링군보다 좋았으나, 12개월 재파열률은 조기 운동 30%, 지속 슬링 33%로 차이가 없었고 통증·근력·삶의 질도 다르지 않았다.",
+      "phase_min": 1, "phase_max": 2, "tear_track": "소~중",
+      "evidence_level": "RCT", "source_id": "sheps-2019", "needs_review": false
+    },
+    {
+      "id": "ev-littlewood-retear",
+      "claim": "평균 2.7cm 파열: 3개월 재파열률 지속 슬링 40%, 조기 운동 30%",
+      "text": "평균 2.7cm 파열을 대상으로 한 무작위 연구에서 3개월 재파열률은 지속 슬링군 40%, 조기 운동군 30%였다. 재파열률 자체가 높다는 점을 치료사가 알고 있어야 한다.",
+      "phase_min": 1, "phase_max": 2, "tear_track": "공통",
+      "evidence_level": "RCT", "source_id": "littlewood-2021", "needs_review": false
+    },
+    {
+      "id": "ev-uw-t1-p1",
+      "claim": "UW Type I 1단계(0~2주): 능동운동 금지, 슬링 연속 6주",
+      "text": "1단계에서는 어깨 능동 관절운동을 하지 않고 물건을 들거나 손으로 체중을 지지하지 않는다. 표준 슬링은 재활·위생 때를 빼고 6주간 연속 착용하며 술기·조직 상태·강직 정도에 따라 4~8주로 조정한다. 팔꿈치·손목·목 능동운동과 공 쥐기는 허용한다.",
+      "phase_min": 1, "phase_max": 1, "tear_track": "소~중",
+      "evidence_level": "병원프로토콜", "source_id": "uw-2017", "needs_review": false
+    },
+    {
+      "id": "ev-uw-t1-criteria",
+      "claim": "UW Type I 진행 기준: 2주 수동 거상 60~90°, 8주 90~120°",
+      "text": "다음 단계로 넘어가는 기준을 각도로 정해 둔다. 2주 시점은 수동 전방거상 60~90°와 20° 외전 자세에서 수동 외회전 20°, 8주 시점은 수동 전방거상 90~120°와 수동 외회전 20~30°다. 이 값은 상한이 아니라 도달 목표다.",
+      "phase_min": 1, "phase_max": 2, "tear_track": "소~중",
+      "evidence_level": "병원프로토콜", "source_id": "uw-2017", "needs_review": true
+    },
+    {
+      "id": "ev-uw-t2-cap70",
+      "claim": "UW Type II 1단계: 견갑면 수동 거상을 70°로 제한",
+      "text": "조직 상태가 나쁘거나 큰 파열로 분류된 Type II에서는 1단계(0~3주) 동안 견갑면 수동 전방거상을 최대 70°로 제한한다. 수동 운동은 통증이 거의 없어야 하고 보상 동작이나 방어 수축이 있는지 함께 본다. 3주 시점 진행 기준은 수동 거상 50~60°, 수동 외회전 10~15°다.",
+      "phase_min": 1, "phase_max": 1, "tear_track": "대·광범위",
+      "evidence_level": "병원프로토콜", "source_id": "uw-2017", "needs_review": true
+    },
+    {
+      "id": "ev-uw-abd-resist",
+      "claim": "UW: 능동 외전 8~10주까지, 극상근 저항 12~14주까지 금지",
+      "text": "능동 외전은 봉합부를 보호하기 위해 Type I은 8주, Type II는 9~10주까지 하지 않는다. 외전과 극상근에 대한 외부 저항은 Type I 12주, Type II 14주까지 금지한다. 슬링은 파열 크기와 조직·봉합 상태를 보아 6~8주에 걸쳐 천천히 뗀다.",
+      "phase_min": 1, "phase_max": 3, "tear_track": "공통",
+      "evidence_level": "병원프로토콜", "source_id": "uw-2017", "needs_review": false
+    },
+    {
+      "id": "ev-uw-arom9",
+      "claim": "UW: 능동 관절운동 시작을 술후 9주로 늦춘다",
+      "text": "능동 관절운동은 수동 관절운동 목표를 채웠는지로 시작을 판단하되 대체로 술후 9주로 늦춘다. 9주 무렵 목표는 수동 전방거상 130~155°, 20° 외전에서 수동 외회전 30~45°, 보상 없이 능동 거상 80~120°다. 능동 각도가 모자라면서 lag 징후가 있으면 봉합부 완전성을 집도의에게 확인한다.",
+      "phase_min": 2, "phase_max": 2, "tear_track": "공통",
+      "evidence_level": "병원프로토콜", "source_id": "uw-2017", "needs_review": true
+    },
+    {
+      "id": "ev-uw-subscap",
+      "claim": "단독 견갑하근 봉합: 6주간 중립 넘는 외회전과 저항성 내회전 금지",
+      "text": "단독 견갑하근 봉합에서는 첫 6주 동안 중립을 넘는 외회전과 저항을 준 내회전을 하지 않는다. 1단계는 굴곡·외전 수동 0~50°까지만 하고, 2단계에서도 내회전근과 견갑하근을 겨냥한 강화는 넣지 않는다.",
+      "phase_min": 1, "phase_max": 2, "tear_track": "공통",
+      "evidence_level": "병원프로토콜", "source_id": "uw-2017", "needs_review": false
+    },
+    {
+      "id": "ev-hss-p1",
+      "claim": "HSS 1단계(0~3주): 슬링 유지, 어깨 높이 아래 자기관리 외 능동 동작 금지",
+      "text": "운동할 때를 빼고 슬링을 유지한다. 어깨 높이 아래의 가벼운 자기관리를 제외하면 수술한 어깨의 능동 동작은 하지 않는다. 견갑면 앙와위 수동 운동과 통증 없는 능동보조 운동, 견갑골 가동성·안정화 운동, 중립위 서브맥시멀 삼각근 운동을 한다. 집도의가 정한 각도 범위를 넘지 않는다.",
+      "phase_min": 1, "phase_max": 1, "tear_track": "공통",
+      "evidence_level": "병원프로토콜", "source_id": "hss", "needs_review": false
+    },
+    {
+      "id": "ev-hss-p2",
+      "claim": "HSS 2단계(3~7주): 6주까지 팔의 능동 거상을 피한다",
+      "text": "6주가 될 때까지 팔의 능동 거상을 피하고 회전근개를 최대로 쓰지 않는다. 능동보조 운동, 상완골두 율동적 안정화, 수정 중립위에서 서브맥시멀 외회전·내회전 등척성을 넣는다. 다음 단계로 가는 기준은 통증 없이 회전근개와 삼각근을 쓸 수 있고 견갑면 거상·외회전이 정상의 80% 이상일 때다.",
+      "phase_min": 1, "phase_max": 2, "tear_track": "공통",
+      "evidence_level": "병원프로토콜", "source_id": "hss", "needs_review": false
+    },
+    {
+      "id": "ev-hss-p3",
+      "claim": "HSS 3단계(7~13주): 밴드 외회전·내회전으로 강화 시작",
+      "text": "옆으로 누운 외회전과 밴드를 쓴 외회전·내회전으로 회전근개와 견갑골 강화를 진행한다. 등 뒤로 손을 넣는 기능적 내회전 운동을 이 단계에서 시작한다. 머리 위 활동은 제한하고, 움직일 때 어깨를 으쓱하는 보상이 나오지 않게 본다.",
+      "phase_min": 2, "phase_max": 3, "tear_track": "공통",
+      "evidence_level": "병원프로토콜", "source_id": "hss", "needs_review": false
+    },
+    {
+      "id": "ev-bsi-small",
+      "claim": "MGH/BSI: 조직이 좋은 소파열은 수동운동·진자운동을 4주부터",
+      "text": "파열이 작고 힘줄 조직 상태가 좋으면 봉합부에 걸리는 장력이 크지 않다고 보아, 수동 관절운동과 진자 운동을 4주부터 시작하고 능동 운동도 이어서 넣을 수 있다.",
+      "phase_min": 1, "phase_max": 1, "tear_track": "소~중",
+      "evidence_level": "병원프로토콜", "source_id": "bsi-2020", "needs_review": false
+    },
+    {
+      "id": "ev-bsi-large",
+      "claim": "MGH/BSI: 견인이 큰 대파열은 진자 운동까지 6주 지연",
+      "text": "힘줄이 많이 밀려 들어갔거나 변성·조직 상태가 나쁜 대파열은 봉합부에 장력이 걸리므로 힘줄에 부하를 주지 않는다. 진자 운동을 포함한 모든 수동·능동 관절운동을 술후 6주까지 미룬다. 진자 운동과 견갑골 운동의 시작 시점은 수술 소견서가 정하며, 소견서가 6주 이후로 적었다면 그 전에 시작하지 않는다.",
+      "phase_min": 1, "phase_max": 1, "tear_track": "대·광범위",
+      "evidence_level": "병원프로토콜", "source_id": "bsi-2020", "needs_review": false
+    },
+    {
+      "id": "ev-bsi-p1-precaution",
+      "claim": "MGH/BSI 1단계 주의 목록",
+      "text": "1단계(1~6주)에는 어깨 능동 관절운동을 하지 않고 슬링을 유지하며 팔꿈치·손목·손가락을 움직일 때만 뺀다. 물건 들기, 등 뒤로 손 뻗기, 과도한 스트레칭과 갑작스러운 움직임, 손으로 체중을 지지하는 동작을 금지한다. 의자에서 일어나거나 침대에서 나올 때 손을 짚기 쉬우므로 특히 주의한다.",
+      "phase_min": 1, "phase_max": 1, "tear_track": "공통",
+      "evidence_level": "병원프로토콜", "source_id": "bsi-2020", "needs_review": false
+    },
+    {
+      "id": "ev-bsi-p2",
+      "claim": "MGH/BSI 2단계(7~12주): 6주 말 보조기 중단, 능동보조 시작",
+      "text": "6주가 끝날 때 보조기와 슬링을 중단하고 물리치료 지도 아래 능동보조 관절운동을 시작한다. 능동 관절운동의 첫 회기는 치료사가 함께 본다. 물건 들기, 갑작스러운 당김, 손으로 체중 지지, 등 뒤로 과하게 넘기는 동작은 계속 금지한다.",
+      "phase_min": 2, "phase_max": 2, "tear_track": "공통",
+      "evidence_level": "병원프로토콜", "source_id": "bsi-2020", "needs_review": false
+    },
+    {
+      "id": "ev-bsi-p3",
+      "claim": "MGH/BSI 3단계(13~16주): 밴드·가벼운 무게 시작, 2.3kg 초과 금지",
+      "text": "탄성 밴드와 가벼운 무게로 근력·지구력을 회복하기 시작한다. 약 2.3kg(5파운드)을 넘는 물건 들기, 갑작스러운 들어올리기·밀기, 급격한 당김은 금지한다. 파열이 작으면 2단계에서 강화를 앞당기기도 하고, 큰 파열은 3단계에서 시작한다.",
+      "phase_min": 3, "phase_max": 3, "tear_track": "공통",
+      "evidence_level": "병원프로토콜", "source_id": "bsi-2020", "needs_review": false
+    },
+    {
+      "id": "ev-fowler-p1",
+      "claim": "Fowler Kennedy 대파열: 수동운동만 하는 1단계가 8~10주까지 이어진다",
+      "text": "대파열 전용 프로토콜에서 수동 관절운동 단계는 0주부터 8~10주까지로 잡는다. 0~2주는 병원에서 알려준 홈 운동 외에 관절운동을 하지 않고, 2~6주는 치료사가 유도하는 앙와위 운동, 6~8주에 지팡이를 쓴 환자 스스로의 수동 운동으로 넘어간다. 첫 6주에는 어깨 능동 굴곡·외전과 능동 수축을 피한다.",
+      "phase_min": 1, "phase_max": 2, "tear_track": "대·광범위",
+      "evidence_level": "병원프로토콜", "source_id": "fowler-2015", "needs_review": false
+    },
+    {
+      "id": "ev-fowler-brace-er",
+      "claim": "Fowler Kennedy: 외전 베개 보조기 최소 2~6주, 수동 외회전 60° 제한",
+      "text": "30° 이상 외전을 지지하는 외전 베개 보조기를 최소 2~6주 사용한다. 봉합부에 과한 장력이 걸리지 않도록, 견갑면 또는 관상면에서 30° 이상 거상한 자세의 수동 외회전을 60°로 제한한다.",
+      "phase_min": 1, "phase_max": 2, "tear_track": "대·광범위",
+      "evidence_level": "병원프로토콜", "source_id": "fowler-2015", "needs_review": true
+    },
+    {
+      "id": "ev-fowler-direction",
+      "claim": "봉합 부위에 따라 피해야 할 수동 방향이 다르다",
+      "text": "극상근을 봉합한 경우에는 수동 내회전과 수평내전, 신전을 피한다. 견갑하근을 봉합한 경우에는 수동 외회전과 수평내전, 신전을 피한다. 어느 힘줄을 봉합했는지에 따라 같은 단계라도 금지 방향이 갈린다.",
+      "phase_min": 1, "phase_max": 2, "tear_track": "공통",
+      "evidence_level": "병원프로토콜", "source_id": "fowler-2015", "needs_review": false
+    },
+    {
+      "id": "ev-fowler-healing12w",
+      "claim": "힘줄과 뼈 사이 결합이 버티려면 최소 12주가 필요하다",
+      "text": "봉합한 힘줄과 뼈 사이에 만들어지는 결합이 뽑히지 않을 만큼 버티려면 최소 12주의 치유 기간이 필요하다고 본다. 강화 시작 시점을 12주 이후로 잡는 근거가 된다.",
+      "phase_min": 1, "phase_max": 3, "tear_track": "공통",
+      "evidence_level": "병원프로토콜", "source_id": "fowler-2015", "needs_review": false
+    },
+    {
+      "id": "ev-osu-massive",
+      "claim": "OSU 대형·광범위: 슬링 6주, 4주간 외회전 40° 초과 금지",
+      "text": "대형·광범위 파열에서는 슬링을 6주 사용하고 보호 단계를 4~6주로 잡는다. 4주 동안 외회전이 40°를 넘지 않게 하고 전·후면 모두에서 어깨 신전을 제한한다. 4~6주간 신전과 수평외전을 하지 않으며, 저항을 준 팔꿈치 굽힘·어깨 굽힘·회외는 6주까지 금지한다.",
+      "phase_min": 1, "phase_max": 2, "tear_track": "대·광범위",
+      "evidence_level": "병원프로토콜", "source_id": "osu-2020", "needs_review": true
+    },
+    {
+      "id": "ev-osu-subscap12w",
+      "claim": "견갑하근 봉합이 함께 된 경우 12주간 제약이 이어진다",
+      "text": "견갑하근을 함께 봉합했다면 12주 동안 외회전, 몸을 가로지르는 내전, 능동 내회전을 하지 않는다. 다른 단계로 넘어가더라도 이 제약은 12주까지 유지한다.",
+      "phase_min": 1, "phase_max": 3, "tear_track": "공통",
+      "evidence_level": "병원프로토콜", "source_id": "osu-2020", "needs_review": false
+    },
+    {
+      "id": "ev-lahey-rest",
+      "claim": "가장 안전한 안정 자세는 견갑면 30° 거상에 외회전 0~60°",
+      "text": "봉합 후 가장 안전한 안정 자세는 견갑면에서 30° 거상한 상태에 외회전 0~60°이며 외전 슬링으로 만들 수 있다. 보조기는 6주가 끝날 때까지 낮에도 잘 때도 착용하고 샤워와 운동 때만 뺀다. 하루 네다섯 번 팔꿈치·아래팔·손목·손가락 운동을 위해 슬링을 푼다.",
+      "phase_min": 1, "phase_max": 1, "tear_track": "소~중",
+      "evidence_level": "병원프로토콜", "source_id": "lahey-2019", "needs_review": true
+    },
+    {
+      "id": "ev-lahey-shrug",
+      "claim": "상완골두 상방 이동과 어깨 으쓱(shrug) 보상을 기준으로 삼는다",
+      "text": "모든 움직임에서 상완골두가 위로 밀려 올라가거나 견갑골이 들리는 으쓱 보상이 나오는지 본다. 강화 프로그램은 으쓱 없이 통증 없는 전 범위 능동 관절운동이 될 때 시작한다. 6주 말까지 통증 없는 완전 수동 관절운동, 10주까지 전 범위 무통 수동 관절운동을 목표로 한다.",
+      "phase_min": 2, "phase_max": 3, "tear_track": "공통",
+      "evidence_level": "병원프로토콜", "source_id": "lahey-2019", "needs_review": false
+    },
+    {
+      "id": "ev-orthori-neutral",
+      "claim": "Ortho RI: 견갑하근 봉합은 중립 자세 외회전만, 능동보조는 4주 이후",
+      "text": "슬링은 술후 6주까지 착용하고 그 사이 능동적으로 팔을 쓰지 않는다. 진자 운동, 중립 자세 외회전, 탁자 위 미끄러뜨리기 등을 스트레칭으로 넣는다. 견갑하근을 봉합했다면 외회전은 중립 자세에서만 한다. 능동보조 운동과 등척성은 술후 4주보다 이르게 시작하지 않는다.",
+      "phase_min": 1, "phase_max": 1, "tear_track": "공통",
+      "evidence_level": "병원프로토콜", "source_id": "orthori-2024", "needs_review": false
+    },
+    {
+      "id": "ev-kr-jkma-phase",
+      "claim": "국내 종설의 3단계: 수동 4~6주 / 능동보조 6~12주 / 강화 12주 이후",
+      "text": "국내 종설은 수술 직후부터 4~6주까지를 수동 관절운동 단계로, 6~12주를 봉을 이용한 능동보조 관절운동 단계로, 12주 이후를 근력강화 단계로 나눈다. 봉합한 힘줄이 최고 장력을 얻는 시점은 술후 12~16주로 본다.",
+      "phase_min": 1, "phase_max": 3, "tear_track": "공통",
+      "evidence_level": "종설", "source_id": "jkma-2022", "needs_review": false
+    },
+    {
+      "id": "ev-kr-jkma-p1-allowed",
+      "claim": "1단계에서 어깨 으쓱과 손·손목·팔꿈치 능동운동은 허용된다",
+      "text": "보조기를 착용한 1단계에는 어깨 관절에 환자 스스로 힘을 주는 능동 운동을 하지 않지만, 어깨를 으쓱하는 정도는 괜찮다. 주먹을 쥐었다 펴는 손가락 운동, 손목 운동, 팔꿈치를 굽혔다 펴는 운동은 능동으로 할 수 있다.",
+      "phase_min": 1, "phase_max": 1, "tear_track": "공통",
+      "evidence_level": "종설", "source_id": "jkma-2022", "needs_review": false
+    },
+    {
+      "id": "ev-kr-jkma-strength-gate",
+      "claim": "근력강화는 통증 VAS 2점 미만 + 수동 가동범위 정상의 80% 이상일 때",
+      "text": "근력강화 운동은 통증이 시각통증척도 2점 미만이고 수동 관절운동 범위가 정상의 약 80% 이상 회복됐을 때 시작하는 것이 바람직하다. 관절범위가 부족하거나 통증이 심한 상태에서 무리하게 강화하면 통증이 늘고 관절범위 제한이 심해지며 힘줄 부착부가 실패할 위험이 커진다.",
+      "phase_min": 2, "phase_max": 3, "tear_track": "공통",
+      "evidence_level": "종설", "source_id": "jkma-2022", "needs_review": false
+    },
+    {
+      "id": "ev-kr-jkma-timing-debate",
+      "claim": "국내 관행은 보조기 4~6주이며 재활 시작 시점은 논란이 있다",
+      "text": "국내에서도 봉합술 후 4~6주간 어깨 보조기로 움직임을 제한하는 것이 일반적이다. 다만 고정이 길면 강직과 통증으로 이어질 수 있어 언제 재활을 시작할지에 대해 술자들 사이에 견해가 갈린다. 현재 문헌으로는 조기와 지연 중 어느 쪽이 낫다고 단정할 수 없으므로 술기·파열 크기·조직 상태에 따라 달리 정한다.",
+      "phase_min": 1, "phase_max": 2, "tear_track": "공통",
+      "evidence_level": "종설", "source_id": "jkma-2022", "needs_review": false
+    },
+    {
+      "id": "ev-kr-jkoa-666",
+      "claim": "국내 종설: 보조기 4~6주 후 수동 6주, 능동 6주, 강화 6주",
+      "text": "적어도 4~6주 보조기를 착용한 뒤 수동 관절운동 6주, 능동 관절운동 6주, 근력강화 운동 6주로 재활을 구성한다. 봉합한 힘줄이 성숙하려면 술후 적어도 3~4개월이 지나야 한다. 통증과 강직은 6개월까지 이어질 수 있고 1년까지 조금씩 나아진다.",
+      "phase_min": 1, "phase_max": 4, "tear_track": "공통",
+      "evidence_level": "종설", "source_id": "jkoa-2019", "needs_review": false
+    },
+    {
+      "id": "ev-kr-amc-patient",
+      "claim": "국내 환자 안내: 보조기 6~8주, 자가 재활 7~8개월",
+      "text": "국내 환자가 받는 안내는 수술 후 6~8주간 보조기를 착용하고 7~8개월에 걸쳐 스스로 재활치료를 하도록 한다. 통증이 유발되지 않는 범위에서 시행하고, 무리한 활동과 부딪히거나 넘어지는 상황을 피한다. 보조기를 제대로 착용하지 않으면 봉합 부위가 파열되거나 이완될 수 있다고 설명한다.",
+      "phase_min": 1, "phase_max": 4, "tear_track": "공통",
+      "evidence_level": "환자안내", "source_id": "amc", "needs_review": false
+    }
+  ]
+}

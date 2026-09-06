@@ -16,10 +16,11 @@ COPY frontend/ frontend/
 RUN useradd --create-home --uid 10002 app && chown -R app:app /app
 USER app
 
+# PORT를 주면 그 포트로 뜬다 (Render 등 PaaS). 없으면 8501 — compose·로컬은 그대로다.
 EXPOSE 8501
 HEALTHCHECK --interval=10s --timeout=5s --start-period=25s --retries=5 \
-  CMD python -c "import urllib.request as u; u.urlopen('http://127.0.0.1:8501/_stcore/health', timeout=4)"
+  CMD python -c "import os,urllib.request as u; u.urlopen('http://127.0.0.1:%s/_stcore/health' % os.getenv('PORT','8501'), timeout=4)"
 
-CMD ["streamlit", "run", "frontend/환자_목록.py", \
-     "--server.port=8501", "--server.address=0.0.0.0", \
-     "--server.headless=true", "--browser.gatherUsageStats=false"]
+CMD ["sh", "-c", "streamlit run frontend/환자_목록.py \
+     --server.port=${PORT:-8501} --server.address=0.0.0.0 \
+     --server.headless=true --browser.gatherUsageStats=false"]

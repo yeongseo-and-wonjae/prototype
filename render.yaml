@@ -1,0 +1,78 @@
+# 리햅톡 — Render 블루프린트 (docker-compose.yml과 같은 역할 분담을 그대로 옮긴 것)
+#
+#   chroma    검색 인덱스     pserv — 내부만, 외부에 노출하지 않는다
+#   backend   API · 환자 웹   web   — 공개
+#   frontend  치료사 화면      web   — 공개
+#
+#   배포:  Render 대시보드 → New → Blueprint → 이 저장소 선택
+#   첫 배포 뒤 backend의 PATIENT_BASE_URL을 실제 공개 URL로 채운다 (아래 주석 참고)
+#
+#   상태는 디스크 두 개에만 있다. 서비스는 언제 다시 만들어도 된다.
+
+services:
+  # ── 검색 인덱스 ────────────────────────────────────────────
+  - type: pserv                     # private service — 인터넷에서 접근 불가
+    name: rehabtalk-chroma
+    runtime: image
+    image:
+      url: docker.io/chromadb/chroma:1.5.9
+    region: singapore               # 한국에서 가장 가까운 리전
+    plan: starter                   # 디스크를 쓰려면 유료 플랜이어야 한다
+    envVars:
+      - key: IS_PERSISTENT
+        value: "TRUE"
+      - key: ANONYMIZED_TELEMETRY
+        value: "FALSE"
+    disk:
+      name: chroma-data
+      mountPath: /data
+      sizeGB: 1
+
+  # ── 규칙 판정 · AI 호출 · API · 환자 모바일 웹 ──────────────
+  - type: web
+    name: rehabtalk-backend
+    runtime: docker
+    dockerfilePath: ./docker/backend.Dockerfile
+    dockerContext: .
+    region: singapore
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      # 포트를 명시해 둔다 — frontend가 부를 내부 주소가 이 값으로 정해진다
+      - key: PORT
+        value: "8000"
+      - key: CHROMA_HOST
+        value: rehabtalk-chroma
+      - key: CHROMA_PORT
+        value: "8000"
+      - key: REHABTALK_DB
+        value: /var/lib/rehabtalk/rehabtalk.db
+      # 환자가 자기 폰으로 여는 링크라 공개 주소여야 한다.
+      # 첫 배포 뒤 https://rehabtalk-backend.onrender.com 형태로 대시보드에서 채운다.
+      - key: PATIENT_BASE_URL
+        sync: false
+      # 키가 없으면 목업으로 돈다 — 데모는 키 없이도 뜬다
+      - key: UPSTAGE_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+    disk:
+      name: rehabtalk-data          # SQLite — 환자·처방·피드백
+      mountPath: /var/lib/rehabtalk
+      sizeGB: 1
+
+  # ── 치료사 화면 (표시·입력만, 백엔드 API만 호출) ────────────
+  - type: web
+    name: rehabtalk-frontend
+    runtime: docker
+    dockerfilePath: ./docker/frontend.Dockerfile
+    dockerContext: .
+    region: singapore
+    plan: starter
+    healthCheckPath: /_stcore/health
+    envVars:
+      - key: PORT
+        value: "8501"
+      # 같은 리전 안에서는 서비스 이름으로 부른다 (인터넷을 타지 않는다)
+      - key: REHABTALK_API
+        value: http://rehabtalk-backend:8000
