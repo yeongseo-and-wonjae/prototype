@@ -1,0 +1,13 @@
+{
+  "_note": "데모 환자 3명. 임상 정보와 식별정보(pii)를 분리해 둔다 — pii는 절대 AI에 전달하지 않는다.",
+  "patients": [
+    {"id": "p1", "token": "tok_kim62", "age": 62, "surgery_date": "2026-08-16", "tear_size": "대형", "pain": 4, "swelling": false, "brace": true, "surgeon_notes": "봉합 상태 양호, 6주까지 PROM only", "protocol_id": "standard_rc"},
+    {"id": "p2", "token": "tok_lee55", "age": 55, "surgery_date": "2026-07-05", "tear_size": "소형~중형", "pain": 3, "swelling": false, "brace": false, "surgeon_notes": "8주부터 AROM 허용", "protocol_id": "standard_rc"},
+    {"id": "p3", "token": "tok_park70", "age": 70, "surgery_date": "2026-08-30", "tear_size": "광범위", "pain": 8, "swelling": true, "brace": true, "surgeon_notes": "광범위 파열, 외회전 20° 이내 유지", "protocol_id": "standard_rc"}
+  ],
+  "patient_pii": [
+    {"patient_id": "p1", "name": "김O호", "phone": "010-1234-5678"},
+    {"patient_id": "p2", "name": "이O정", "phone": "010-2345-6789"},
+    {"patient_id": "p3", "name": "박O자", "phone": "010-3456-7890"}
+  ]
+}

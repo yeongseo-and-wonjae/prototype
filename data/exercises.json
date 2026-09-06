@@ -1,0 +1,38 @@
+{
+  "_note": "운동 라이브러리. 벡터 색인 대상이 아니다 — 태그 필터와 rules.check의 대조 대상이다. 데모용 예시값.",
+  "exercises": [
+    {"id": "ex01", "name": "진자 운동", "type": "수동", "phase": 1, "rom": null, "dose": "3회 × 2분", "minutes": 6, "patient_desc": "허리를 숙이고 팔에 힘을 뺀 채 천천히 원을 그립니다", "source": "표준본 Phase I", "tags": ["필수", "어깨", "가정"]},
+    {"id": "ex02", "name": "수동 전방거상 (테이블 슬라이드)", "type": "수동", "phase": 1, "rom": 90, "dose": "3세트 × 10회", "minutes": 5, "patient_desc": "책상 위에 팔을 얹고 상체를 숙여 팔을 앞으로 밀어 올립니다", "source": "표준본 Phase I", "tags": ["거상", "어깨", "가정"]},
+    {"id": "ex03", "name": "수동 외회전 (막대 이용)", "type": "수동", "phase": 1, "rom": 30, "dose": "3세트 × 10회", "minutes": 5, "patient_desc": "누워서 막대를 잡고 반대 손으로 밀어 팔을 바깥으로 돌립니다", "source": "표준본 Phase I", "tags": ["외회전", "어깨", "가정"]},
+    {"id": "ex04", "name": "수동 외전 (막대 이용)", "type": "수동", "phase": 1, "rom": 90, "dose": "2세트 × 10회", "minutes": 4, "patient_desc": "누워서 막대로 팔을 옆으로 천천히 벌립니다", "source": "표준본 Phase I", "tags": ["외전", "어깨"]},
+    {"id": "ex05", "name": "손목 굽혔다 펴기", "type": "능동", "phase": 1, "rom": null, "dose": "3세트 × 15회", "minutes": 3, "patient_desc": "손목을 위아래로 천천히 움직입니다", "source": "표준본 Phase I", "tags": ["말단", "부종"]},
+    {"id": "ex06", "name": "손 쥐었다 펴기", "type": "능동", "phase": 1, "rom": null, "dose": "3세트 × 20회", "minutes": 3, "patient_desc": "손을 꽉 쥐었다 활짝 폅니다. 붓기를 빼는 데 도움이 됩니다", "source": "표준본 Phase I", "tags": ["말단", "부종"]},
+    {"id": "ex07", "name": "팔꿈치 굽혔다 펴기", "type": "능동", "phase": 1, "rom": null, "dose": "3세트 × 15회", "minutes": 3, "patient_desc": "보조기를 풀고 팔꿈치만 천천히 접었다 폅니다", "source": "표준본 Phase I", "tags": ["말단"]},
+    {"id": "ex08", "name": "견갑골 세팅 (어깨뼈 모으기)", "type": "등척성", "phase": 1, "rom": null, "dose": "3세트 × 10회", "minutes": 4, "patient_desc": "어깨를 뒤로 살짝 모아 5초 유지합니다. 팔은 움직이지 않습니다", "source": "표준본 Phase I", "tags": ["견갑골", "자세"]},
+    {"id": "ex09", "name": "목 스트레칭 (옆으로 늘이기)", "type": "수동", "phase": 1, "rom": null, "dose": "좌우 3회 × 20초", "minutes": 3, "patient_desc": "머리를 반대쪽으로 천천히 기울여 목 옆을 늘입니다", "source": "표준본 Phase I", "tags": ["보상", "목"]},
+    {"id": "ex10", "name": "앉은 자세 교정", "type": "등척성", "phase": 1, "rom": null, "dose": "하루 5회 × 1분", "minutes": 5, "patient_desc": "등을 펴고 턱을 살짝 당긴 자세를 1분간 유지합니다", "source": "표준본 Phase I", "tags": ["자세"]},
+
+    {"id": "ex11", "name": "능동보조 전방거상 (막대)", "type": "능동보조", "phase": 2, "rom": 140, "dose": "3세트 × 10회", "minutes": 5, "patient_desc": "누워서 막대를 양손으로 잡고 건강한 팔의 힘으로 함께 올립니다", "source": "표준본 Phase II", "tags": ["거상", "어깨"]},
+    {"id": "ex12", "name": "능동보조 외회전 (막대)", "type": "능동보조", "phase": 2, "rom": 45, "dose": "3세트 × 10회", "minutes": 5, "patient_desc": "팔꿈치를 옆구리에 붙이고 막대로 아래팔을 바깥으로 밉니다", "source": "표준본 Phase II", "tags": ["외회전", "어깨"]},
+    {"id": "ex13", "name": "벽 기어오르기", "type": "능동보조", "phase": 2, "rom": 120, "dose": "3세트 × 8회", "minutes": 5, "patient_desc": "벽에 손가락을 대고 조금씩 위로 걸어 올라갑니다", "source": "표준본 Phase II", "tags": ["거상", "가정"]},
+    {"id": "ex14", "name": "능동보조 외전 (막대)", "type": "능동보조", "phase": 2, "rom": 120, "dose": "2세트 × 10회", "minutes": 4, "patient_desc": "누워서 막대로 팔을 옆으로 벌려 올립니다", "source": "표준본 Phase II", "tags": ["외전"]},
+    {"id": "ex15", "name": "누워서 능동 전방거상", "type": "능동", "phase": 2, "rom": 120, "dose": "2세트 × 8회", "minutes": 4, "patient_desc": "천장을 보고 누워 팔을 스스로 천천히 올립니다", "source": "표준본 Phase II", "tags": ["거상"]},
+    {"id": "ex16", "name": "등척성 외회전", "type": "등척성", "phase": 2, "rom": null, "dose": "3세트 × 8회 (5초 유지)", "minutes": 4, "patient_desc": "문틀에 손등을 대고 바깥으로 살짝 밀며 5초 버팁니다. 팔은 움직이지 않습니다", "source": "표준본 Phase II", "tags": ["외회전", "근력"]},
+    {"id": "ex17", "name": "등척성 내회전", "type": "등척성", "phase": 2, "rom": null, "dose": "3세트 × 8회 (5초 유지)", "minutes": 4, "patient_desc": "문틀에 손바닥을 대고 안쪽으로 살짝 밀며 5초 버팁니다", "source": "표준본 Phase II", "tags": ["내회전", "근력"]},
+    {"id": "ex18", "name": "등척성 외전", "type": "등척성", "phase": 2, "rom": null, "dose": "3세트 × 8회 (5초 유지)", "minutes": 4, "patient_desc": "벽에 팔꿈치 바깥쪽을 대고 살짝 밀며 5초 버팁니다", "source": "표준본 Phase II", "tags": ["외전", "근력"]},
+
+    {"id": "ex19", "name": "서서 능동 전방거상", "type": "능동", "phase": 3, "rom": 160, "dose": "3세트 × 10회", "minutes": 5, "patient_desc": "서서 팔을 앞으로 천천히 들어 올립니다", "source": "표준본 Phase III", "tags": ["거상"]},
+    {"id": "ex20", "name": "서서 능동 외회전", "type": "능동", "phase": 3, "rom": 60, "dose": "3세트 × 10회", "minutes": 4, "patient_desc": "팔꿈치를 옆구리에 붙이고 아래팔을 바깥으로 돌립니다", "source": "표준본 Phase III", "tags": ["외회전"]},
+    {"id": "ex21", "name": "저항밴드 외회전", "type": "저항", "phase": 3, "rom": 45, "dose": "3세트 × 12회", "minutes": 5, "patient_desc": "밴드를 잡고 팔꿈치를 붙인 채 바깥으로 당깁니다", "source": "표준본 Phase III", "tags": ["외회전", "근력"]},
+    {"id": "ex22", "name": "저항밴드 내회전", "type": "저항", "phase": 3, "rom": 45, "dose": "3세트 × 12회", "minutes": 5, "patient_desc": "밴드를 잡고 아래팔을 배 쪽으로 당깁니다", "source": "표준본 Phase III", "tags": ["내회전", "근력"]},
+    {"id": "ex23", "name": "저항밴드 노젓기", "type": "저항", "phase": 3, "rom": null, "dose": "3세트 × 12회", "minutes": 5, "patient_desc": "밴드를 앞에 걸고 노 젓듯 팔꿈치를 뒤로 당깁니다", "source": "표준본 Phase III", "tags": ["견갑골", "근력"]},
+    {"id": "ex24", "name": "엎드려 Y자 들기", "type": "능동", "phase": 3, "rom": 120, "dose": "2세트 × 10회", "minutes": 4, "patient_desc": "엎드려서 팔을 Y자로 뻗어 살짝 들어 올립니다", "source": "표준본 Phase III", "tags": ["견갑골"]},
+    {"id": "ex25", "name": "옆으로 누워 외회전", "type": "저항", "phase": 3, "rom": 45, "dose": "2세트 × 12회", "minutes": 4, "patient_desc": "옆으로 누워 가벼운 무게를 들고 아래팔을 바깥으로 돌립니다", "source": "표준본 Phase III", "tags": ["외회전", "근력"]},
+
+    {"id": "ex26", "name": "저항밴드 외전", "type": "저항", "phase": 4, "rom": 90, "dose": "3세트 × 12회", "minutes": 5, "patient_desc": "밴드를 밟고 팔을 옆으로 벌려 올립니다", "source": "표준본 Phase IV", "tags": ["외전", "근력"]},
+    {"id": "ex27", "name": "가벼운 덤벨 프레스", "type": "저항", "phase": 4, "rom": 160, "dose": "3세트 × 10회", "minutes": 6, "patient_desc": "가벼운 아령을 머리 위로 천천히 밀어 올립니다", "source": "표준본 Phase IV", "tags": ["거상", "근력"]},
+    {"id": "ex28", "name": "벽 푸시업 플러스", "type": "저항", "phase": 4, "rom": null, "dose": "3세트 × 12회", "minutes": 5, "patient_desc": "벽을 밀며 팔굽혀펴기 후 어깨를 앞으로 한 번 더 밉니다", "source": "표준본 Phase IV", "tags": ["견갑골", "근력"]},
+    {"id": "ex29", "name": "선반 위 물건 올리기 훈련", "type": "능동", "phase": 4, "rom": 160, "dose": "2세트 × 10회", "minutes": 5, "patient_desc": "가벼운 물건을 어깨 높이 선반에 올렸다 내립니다", "source": "표준본 Phase IV", "tags": ["기능", "일상"]},
+    {"id": "ex30", "name": "상지 에르고미터", "type": "능동", "phase": 4, "rom": null, "dose": "1회 × 10분", "minutes": 10, "patient_desc": "손으로 돌리는 자전거를 10분간 천천히 돌립니다", "source": "표준본 Phase IV", "tags": ["지구력"]}
+  ]
+}
