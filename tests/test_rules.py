@@ -302,3 +302,57 @@ def test_shifted_phase_numbering_flags_everything():
     ]
     slots, _ = ai_extract._to_slots(raw)
     assert all(s.needs_review for s in slots), [(s.phase, s.confidence) for s in slots]
+
+
+# ── 담긴 세트 전체 평가 ──────────────────────────────────────
+
+def _set_slot() -> ProtocolSlot:
+    return ProtocolSlot(
+        phase=1, weeks=(0, 6),
+        allowed=["수동 관절운동", "진자 운동"],
+        forbidden=["능동 거상", "저항 운동"],
+        rom_caps={"수동 외회전": 30},
+    )
+
+
+def test_set_blocks_forbidden_and_over_cap():
+    slot = _set_slot()
+    review = rules.check_set([
+        ExerciseCandidate(name="진자 운동", type="수동", minutes=6),
+        ExerciseCandidate(name="능동 거상", type="능동", rom=90, minutes=5),
+        ExerciseCandidate(name="수동 외회전", type="수동", rom=60, minutes=5),
+    ], slot)
+
+    assert review.ok is False
+    blocked = {i.message.split(" — ")[0] for i in review.issues if i.level == "막음"}
+    assert blocked == {"능동 거상", "수동 외회전"}, blocked
+
+
+def test_set_warns_on_missing_required_and_too_long():
+    slot = _set_slot()
+    review = rules.check_set(
+        [ExerciseCandidate(name="수동 외회전", type="수동", rom=30, minutes=30)], slot)
+
+    assert review.ok is True, "주의는 발송을 막지 않는다"
+    ids = {i.rule_id for i in review.issues}
+    assert "RC-P1-REQ-PENDULUM" in ids, "진자 운동 누락을 못 잡았다"
+    assert "SET-MINUTES" in ids, f"30분인데 시간 경고가 없다 ({ids})"
+
+
+def test_empty_set_is_blocked():
+    review = rules.check_set([], _set_slot())
+    assert review.ok is False
+    assert any(i.rule_id == "SET-EMPTY" for i in review.issues)
+
+
+def test_set_reports_missing_videos():
+    slot = _set_slot()
+    review = rules.check_set([
+        ExerciseCandidate(name="진자 운동", type="수동", minutes=6,
+                          video_url="https://video.rehabtalk.example/ex01.mp4"),
+        ExerciseCandidate(name="수동 외회전", type="수동", rom=30, minutes=5),
+    ], slot)
+
+    assert review.ok is True
+    assert review.videos_missing == ["수동 외회전"]
+    assert any(i.rule_id == "SET-NO-VIDEO" for i in review.issues)

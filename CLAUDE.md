@@ -11,7 +11,7 @@
 1. 치료사가 환자(김OO, 62세, 회전근개 봉합 후 3주)를 열고 **프로토콜 사진**을 올린다
 2. AI가 **6칸**(단계·기간·보조기·허용·금지·각도상한)을 추출 → 치료사가 사진 옆에서 확인·수정 후 "맞음"
 3. **AI 초안**이 뜬다. 통과 항목과 **제외된 항목이 이유와 함께** 함께 보인다
-4. 치료사가 체크 → **"카카오톡으로 보내기"** → 세팅 소요 시간 표시(목표 60초 이내)
+4. 치료사가 필요한 운동을 **담고**, 담긴 세트에 대한 **전체 평가**(시간·커버리지·막음/주의)를 본 뒤 **"적용하기"** → 세팅 소요 시간 표시(목표 60초 이내). 환자에게는 운동 **영상 링크**와 상태 한 줄이 함께 간다
 5. 환자 화면: 알림톡 미리보기 → 링크 → 오늘 운동 3개, **완료 체크·통증 0~10·가동범위 그림 선택**
 6. 치료사 **인박스**: "2주째 가동범위 정체" 카드 + **AI 조정 후보 2개** → 하나 선택해 발송
 
@@ -162,6 +162,7 @@ class ExerciseCandidate(BaseModel):
     reason: str                         # 왜 이 환자에게 (25자 이내)
     patient_desc: str                   # 환자용 쉬운 설명 (40자 이내)
     source: str                         # 출처
+    video_url: str | None               # 시범 영상 — 모델이 만들지 않는다. 라이브러리에 등록된 것만
 
 class DraftResult(BaseModel):
     passed: list[ExerciseCandidate]
@@ -199,6 +200,7 @@ class InboxItem(BaseModel):
 
 ```python
 def check(candidates: list[ExerciseCandidate], protocol_slot: ProtocolSlot) -> DraftResult
+def check_set(exercises: list[ExerciseCandidate], protocol_slot: ProtocolSlot) -> SetReview
 def has_red_flag(text: str) -> bool          # 키워드·패턴 기반, LLM 아님
 def within_plan(reply: str, plan, faq) -> bool  # 챗 출력 검사
 def is_stalled(feedback_history) -> bool     # 정체 감지 (N주 이상)
@@ -213,6 +215,19 @@ def is_stalled(feedback_history) -> bool     # 정체 감지 (N주 이상)
 | 단계 필수 항목 누락 | **추가** | RC-P1-REQ-PENDULUM |
 | 통증 ≥7 + 부종 | **전체 세트 1회 감량** | GEN-RED-FLAG |
 | 프로토콜에 정보 없음 | **"확인 필요" 표시** | GEN-NO-INFO |
+
+**세트 단위 판정** — `check_set()`. 운동 하나하나가 안전해도 묶음이 과하거나 한쪽으로 쏠릴 수 있다.
+
+| 판정 | 결과 | rule_id |
+|---|---|---|
+| 담긴 것이 없음 | **막음** | SET-EMPTY |
+| 금지·상한 위반이 담김 | **막음** (조용히 빼지 않는다 — 치료사가 정한다) | RC-P{n}-* |
+| 하루 권장 시간 초과 | 주의 | SET-MINUTES |
+| 단계 필수 항목 누락 | 주의 | RC-P{n}-REQ-* |
+| 방향 커버리지 부족 | 정보 | SET-COVERAGE |
+| 영상 미등록 | 정보 | SET-NO-VIDEO |
+
+`ok=False`면 `POST /api/plan/send`가 **422로 되돌린다.** 담은 것을 말없이 빼고 보내지 않는다.
 
 문구 매칭은 표기 방식에 흔들리지 않아야 한다. `"손/팔꿈치 운동"`의 슬래시는 **또는**으로 읽고,
 `"능동 거상, 저항 운동"`처럼 한 칸에 쉼표로 묶여 들어온 항목은 각각으로 나눠 본다.
@@ -278,6 +293,7 @@ collection.query(query_texts=[...],
 | POST | `/api/protocol/extract` | 사진 업로드 → 6칸 추출 (미확정 상태 저장) |
 | PUT | `/api/protocol/{id}` | 치료사 확인·수정 → 확정, version+1 |
 | POST | `/api/plan/draft` | 환자 상태 → `sanitize → retrieve → AI → rules.check` → DraftResult |
+| POST | `/api/plan/review` | 담긴 세트 → `rules.check_set` → SetReview (담을 때마다 호출) |
 | POST | `/api/plan/send` | 선택 운동 저장 + `send_kakao()` |
 | POST | `/api/feedback` | 환자 완료·통증·가동범위 기록 (토큰 인증) |
 | GET | `/api/inbox` | 정체 신호·질문 목록 + AI 조정 후보 |

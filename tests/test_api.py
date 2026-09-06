@@ -62,6 +62,33 @@ def test_scene4_send_returns_kakao_preview(client):
     assert "리햅톡" in r["kakao"]["preview"] and "/p/" in r["kakao"]["link"]
 
 
+def test_send_refuses_a_cart_with_forbidden_items(client):
+    """치료사가 담은 목록에 금지가 있으면 조용히 빼지 않고 되돌린다."""
+    draft = client.post("/api/plan/draft", json={"patient_id": "p1"}).json()["draft"]
+    bad = draft["passed"] + [{
+        "name": "능동 거상", "type": "능동", "rom": 90, "dose": "3세트 × 10회",
+        "minutes": 5, "grade": "참고", "reason": "", "patient_desc": "", "source": "참고",
+    }]
+
+    review = client.post("/api/plan/review",
+                         json={"patient_id": "p1", "exercises": bad}).json()["review"]
+    assert review["ok"] is False
+
+    res = client.post("/api/plan/send", json={"patient_id": "p1", "exercises": bad})
+    assert res.status_code == 422, res.text
+    assert "능동 거상" in res.json()["detail"]
+
+
+def test_review_reports_time_and_videos(client):
+    draft = client.post("/api/plan/draft", json={"patient_id": "p1"}).json()["draft"]
+    review = client.post("/api/plan/review",
+                         json={"patient_id": "p1", "exercises": draft["passed"]}).json()["review"]
+
+    assert review["count"] == len(draft["passed"])
+    assert review["total_minutes"] > 0
+    assert set(review["coverage"]) == {"거상", "외회전"}, review["coverage"]
+
+
 def test_scene5_patient_page_and_feedback(client):
     page = client.get("/p/tok_kim62")
     assert page.status_code == 200

@@ -70,6 +70,7 @@ class ExerciseCandidate(BaseModel):
     reason: str = ""                            # 왜 이 환자에게 (25자 이내)
     patient_desc: str = ""                      # 환자용 쉬운 설명 (40자 이내)
     source: str = "표준본"                       # 출처 — 절대 규칙 5
+    video_url: str | None = None                # 환자에게 보낼 시범 영상
     note: str | None = None                     # "확인 필요" 등 규칙이 붙인 꼬리표
 
 
@@ -79,6 +80,25 @@ class DraftResult(BaseModel):
     adjusted: list[dict] = Field(default_factory=list)   # {candidate, before, after, rule_id}
     phase: Phase = 1
     red_flag: bool = False
+
+
+class SetIssue(BaseModel):
+    """담긴 세트 전체를 본 판정 하나."""
+
+    level: Literal["막음", "주의", "정보"]
+    message: str
+    rule_id: str
+
+
+class SetReview(BaseModel):
+    """장바구니에 담긴 세트를 통째로 본 결과. 발송 직전에 이걸 통과해야 한다."""
+
+    ok: bool                                    # '막음'이 하나도 없으면 True
+    total_minutes: int
+    count: int
+    issues: list[SetIssue] = Field(default_factory=list)
+    coverage: dict[str, bool] = Field(default_factory=dict)   # 방향별 포함 여부
+    videos_missing: list[str] = Field(default_factory=list)
 
 
 class Feedback(BaseModel):

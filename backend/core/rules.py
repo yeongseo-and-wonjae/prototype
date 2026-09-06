@@ -21,6 +21,8 @@ from .schemas import (
     Feedback,
     Patient,
     ProtocolSlot,
+    SetIssue,
+    SetReview,
     TearSize,
 )
 
@@ -56,6 +58,17 @@ REQUIRED_BY_PHASE: dict[int, list[tuple[str, str, dict]]] = {
             },
         )
     ],
+}
+
+#: 단계별 하루 권장 운동 시간(분). 넘으면 막지 않고 주의만 준다.
+MINUTES_CAP: dict[int, int] = {1: 25, 2: 30, 3: 35, 4: 45}
+
+#: 단계별로 하루에 다뤄야 하는 방향. 빠지면 정보로 알린다(막지 않는다).
+COVERAGE_BY_PHASE: dict[int, list[str]] = {
+    1: ["거상", "외회전"],
+    2: ["거상", "외회전", "외전"],
+    3: ["거상", "외회전", "내회전"],
+    4: ["거상", "외회전", "기능"],
 }
 
 #: 적신호 — 키워드·패턴 기반. LLM 아님.
@@ -288,6 +301,82 @@ def _reduce_sets(dose: str) -> str:
         return f"{max(1, int(m.group(1)) - 1)}세트"
 
     return re.sub(r"(\d+)\s*세트", repl, dose, count=1)
+
+
+def check_set(
+    exercises: list[ExerciseCandidate],
+    protocol_slot: ProtocolSlot,
+    patient: Patient | None = None,
+) -> SetReview:
+    """담긴 세트를 통째로 본다. 개별 검사(check)가 통과시킨 것도 여기서 다시 본다.
+
+    운동 하나하나가 안전해도 묶음이 과하거나 한쪽으로 쏠릴 수 있다.
+    '막음'이 하나라도 있으면 발송을 막는다 — 판단은 전부 코드가 한다.
+    """
+    issues: list[SetIssue] = []
+    caps = effective_caps(protocol_slot, patient)
+
+    if not exercises:
+        issues.append(SetIssue(level="막음", message="담긴 운동이 없습니다",
+                               rule_id="SET-EMPTY"))
+
+    for cand in exercises:
+        hit = next((f for f in protocol_slot.forbidden if _matches(f, cand)), None)
+        if hit:
+            issues.append(SetIssue(
+                level="막음", message=f"{cand.name} — {protocol_slot.phase}단계 금지: {hit}",
+                rule_id=_rule_id(protocol_slot.phase, "FORBID", hit)))
+        if cand.rom is not None:
+            for key, (limit, rid) in caps.items():
+                if _matches(key, cand) and cand.rom > limit:
+                    issues.append(SetIssue(
+                        level="막음",
+                        message=f"{cand.name} — 상한 {limit}°를 넘습니다 ({cand.rom}°)",
+                        rule_id=rid))
+                    break
+
+    for name, rid, _ in REQUIRED_BY_PHASE.get(protocol_slot.phase, []):
+        if not any(_matches(name, c) for c in exercises):
+            issues.append(SetIssue(
+                level="주의", message=f"{protocol_slot.phase}단계 필수 항목 '{name}'이 빠졌습니다",
+                rule_id=rid))
+
+    total = sum(c.minutes for c in exercises)
+    cap = MINUTES_CAP.get(protocol_slot.phase, 45)
+    if total > cap:
+        issues.append(SetIssue(
+            level="주의", message=f"하루 {total}분 — {protocol_slot.phase}단계 권장 {cap}분을 넘습니다",
+            rule_id="SET-MINUTES"))
+
+    if patient is not None and patient.pain >= PAIN_RED_FLAG and patient.swelling:
+        issues.append(SetIssue(
+            level="주의", message=f"통증 {patient.pain} + 부종 — 세트를 줄여 보냅니다",
+            rule_id="GEN-RED-FLAG"))
+
+    coverage = {}
+    for direction in COVERAGE_BY_PHASE.get(protocol_slot.phase, []):
+        covered = any(direction in _norm(c.name) or direction in _norm(" ".join(
+            [c.reason, c.patient_desc])) for c in exercises)
+        coverage[direction] = covered
+        if not covered:
+            issues.append(SetIssue(
+                level="정보", message=f"'{direction}' 방향 운동이 없습니다",
+                rule_id="SET-COVERAGE"))
+
+    missing = [c.name for c in exercises if not c.video_url]
+    if missing:
+        issues.append(SetIssue(
+            level="정보", message=f"영상이 없는 운동 {len(missing)}개 — 글 설명만 전달됩니다",
+            rule_id="SET-NO-VIDEO"))
+
+    return SetReview(
+        ok=not any(i.level == "막음" for i in issues),
+        total_minutes=total,
+        count=len(exercises),
+        issues=issues,
+        coverage=coverage,
+        videos_missing=missing,
+    )
 
 
 def within_plan(reply: str, plan: list[ExerciseCandidate], faq: list[str] | None = None) -> bool:

@@ -44,6 +44,10 @@
   .ex-rom{color:var(--muted);font-weight:400}
   .ex-dose{color:var(--safe);font-weight:600;margin-top:2px}
   .ex-desc{color:var(--muted);font-size:17px;margin-top:6px}
+  .ex-video{display:inline-flex;align-items:center;gap:7px;margin-top:10px;padding:9px 15px;
+            border:1.5px solid var(--safe);border-radius:99px;color:var(--safe);
+            font-size:16px;font-weight:600;text-decoration:none;background:#fff}
+  .ex-novideo{display:inline-block;margin-top:8px;color:var(--muted);font-size:15px}
   .ex.done{background:var(--safe-soft);border-left-color:var(--safe)}
   .ex.done .ex-name{color:var(--safe)}
 
@@ -117,6 +121,12 @@
       <span class="ex-name">{{ ex.name }}{% if ex.rom %} <span class="ex-rom">({{ ex.rom }}°까지)</span>{% endif %}</span>
       <div class="ex-dose">{{ ex.dose }}</div>
       <div class="ex-desc">{{ ex.patient_desc }}</div>
+      {% if ex.video_url %}
+      <a class="ex-video" href="{{ ex.video_url }}" target="_blank" rel="noopener"
+         onclick="event.stopPropagation()">▶ 영상 보기</a>
+      {% else %}
+      <span class="ex-novideo">영상은 아직 없습니다 — 위 설명대로 해주세요</span>
+      {% endif %}
     </span>
   </label>
   {% else %}

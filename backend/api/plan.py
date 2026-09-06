@@ -21,6 +21,11 @@ class DraftRequest(BaseModel):
     patient_id: str
 
 
+class ReviewRequest(BaseModel):
+    patient_id: str
+    exercises: list[ExerciseCandidate]
+
+
 class SendRequest(BaseModel):
     patient_id: str
     exercises: list[ExerciseCandidate]
@@ -61,19 +66,38 @@ def draft_plan(body: DraftRequest) -> dict:
     }
 
 
+@router.post("/review")
+def review_plan(body: ReviewRequest) -> dict:
+    """장바구니에 담긴 세트를 통째로 본다. 발송 전에 치료사가 보는 종합 평가."""
+    patient, _, slot = _context(body.patient_id)
+    result = rules.check_set(body.exercises, slot, patient)
+    return {"review": result.model_dump(mode="json")}
+
+
 @router.post("/send")
 def send_plan(body: SendRequest) -> dict:
     patient, _, slot = _context(body.patient_id)
 
-    # 화면에서 온 목록이라도 한 번 더 규칙을 통과시킨다 (절대 규칙 2)
+    # ① 치료사가 담은 목록을 그대로 본다. '막음'이 있으면 조용히 빼지 않고 되돌린다
+    #    — 무엇을 보낼지는 치료사가 정한다(절대 규칙 4).
+    review = rules.check_set(body.exercises, slot, patient)
+    if not review.ok:
+        blocked = [i.message for i in review.issues if i.level == "막음"]
+        raise HTTPException(422, "세트 검사를 통과하지 못했습니다 — " + " / ".join(blocked))
+
+    # ② 통과했더라도 개별 규칙을 한 번 더 적용한다 (각도 하향·세트 감량, 절대 규칙 2)
     checked = rules.check(body.exercises, slot, patient)
     exercises = [c.model_dump(mode="json") for c in checked.passed]
 
     db.save_plan(patient.id, date.today(), exercises, sent=True)
-    message = notify.send_kakao(db.patient_name(patient.id), patient.token, exercises)
+    status = (f"수술 후 {core_protocol.weeks_since(patient.surgery_date)}주 · "
+              f"{slot.phase}단계 · 오늘 {review.total_minutes}분")
+    message = notify.send_kakao(db.patient_name(patient.id), patient.token, exercises,
+                                status=status)
 
     return {
         "kakao": message,
+        "review": review.model_dump(mode="json"),
         "count": len(exercises),
         "elapsed_seconds": body.elapsed_seconds,
         "adjusted_on_send": checked.adjusted,

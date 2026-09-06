@@ -68,7 +68,11 @@ def draft(clean_patient: dict, slot: ProtocolSlot) -> tuple[list[ExerciseCandida
         ),
     )
     raw = client.ask_json(system, "오늘 시행할 운동 후보를 제안하세요.", SCHEMA)
-    return [ExerciseCandidate(**c) for c in raw["candidates"]], evidence
+
+    # 영상 주소는 모델이 만들지 않는다 — 라이브러리에 등록된 것만 이름으로 붙인다
+    videos = {e["name"]: e.get("video_url") for e in LIBRARY}
+    return ([ExerciseCandidate(**c, video_url=videos.get(c["name"])) for c in raw["candidates"]],
+            evidence)
 
 
 def _mock(clean_patient: dict, slot: ProtocolSlot) -> list[ExerciseCandidate]:
@@ -86,6 +90,7 @@ def _mock(clean_patient: dict, slot: ProtocolSlot) -> list[ExerciseCandidate]:
         out.append(ExerciseCandidate(
             name=e["name"], type=e["type"], rom=e["rom"], dose=e["dose"], minutes=e["minutes"],
             grade="표준" if e["phase"] <= slot.phase else "참고",
+            video_url=e.get("video_url"),
             reason=f"{reasons.get(e['phase'], '')} ({clean_patient['weeks_since_surgery']}주차)"[:25],
             patient_desc=e["patient_desc"], source=e["source"],
         ))
