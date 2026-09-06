@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Request
@@ -27,6 +28,7 @@ def patient_page(request: Request, token: str):
 
     return templates.TemplateResponse(request, "patient.html", {
         "name": db.patient_name(patient.id),
+        "today": date.today(),
         "token": token,
         "exercises": exercises,
         "minutes": sum(e.get("minutes", 5) for e in exercises),

@@ -14,4 +14,4 @@ echo "  치료사 화면 : http://localhost:8501"
 echo "  환자 화면   : http://localhost:8000/p/tok_kim62"
 echo "  API 문서    : http://localhost:8000/docs"
 echo "─────────────────────────────────────────────"
-.venv/bin/python -m streamlit run frontend/app.py --server.port 8501
+.venv/bin/python -m streamlit run frontend/환자_목록.py --server.port 8501

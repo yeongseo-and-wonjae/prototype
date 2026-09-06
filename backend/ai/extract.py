@@ -100,7 +100,30 @@ def _to_slots(raw: list[dict]) -> tuple[list[ProtocolSlot], list[str]]:
             continue
         seen.add(slot.phase)
         slots.append(slot)
-    return sorted(slots, key=lambda s: s.phase), errors
+    slots.sort(key=lambda s: s.phase)
+    return _flag_broken_timeline(slots), errors
+
+
+def _flag_broken_timeline(slots: list[ProtocolSlot]) -> list[ProtocolSlot]:
+    """단계 기간이 이어지지 않으면 확인 필요로 내린다.
+
+    모델이 보조기 문구("8주 후 해제")의 숫자를 기간으로 잘못 읽는 일이 있다.
+    자신 있게 틀리는 경우도 있어서, 값 자체를 고치지 않고 치료사에게 넘긴다.
+    """
+    suspect: set[int] = set()
+    for i, slot in enumerate(slots):
+        if slot.weeks[1] <= slot.weeks[0]:
+            suspect.add(i)
+        if i == 0 and slot.weeks[0] != 0:
+            # 첫 단계가 0주에서 시작하지 않으면 단계 번호가 통째로 밀렸을 수 있다.
+            # 뒤 단계의 번호도 같이 틀리므로 전부 확인 대상으로 올린다.
+            suspect.update(range(len(slots)))
+        if i > 0 and slot.weeks[0] != slots[i - 1].weeks[1]:
+            suspect.update({i - 1, i})         # 끊긴 자리는 양쪽 다 의심스럽다
+
+    for i in suspect:
+        slots[i].confidence = min(slots[i].confidence, 0.5)
+    return slots
 
 
 def _to_slot(item: dict) -> ProtocolSlot:

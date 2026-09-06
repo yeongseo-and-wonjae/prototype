@@ -36,7 +36,7 @@ def run(path: str) -> AppTest:
 
 
 def test_patient_list_renders():
-    at = run("frontend/app.py")
+    at = run("frontend/환자_목록.py")
     assert "환자 목록" in at.title[0].value
     assert len(at.button) >= 3                      # 환자마다 '열기' 버튼
 
@@ -54,8 +54,16 @@ def test_plan_page_draft_and_send():
 
     at.button[0].click().run()                      # AI 초안 만들기
     assert not at.exception, at.exception
-    assert at.session_state["draft"]["draft"]["passed"], "통과한 운동이 없습니다"
-    assert at.session_state["draft"]["draft"]["excluded"], "규칙이 걸러낸 항목이 없습니다"
+
+    draft = at.session_state["draft"]["draft"]
+    assert draft["passed"], "통과한 운동이 없습니다"
+    # 무엇이 걸러지는지는 AI 응답에 따라 달라진다. 규칙 판정 자체는
+    # tests/test_rules.py 와 test_api.py 가 목업으로 결정론적으로 검증한다.
+    # 여기서는 화면이 검증 결과를 받아 그릴 수 있는 모양인지만 본다.
+    for cut in draft["excluded"]:
+        assert cut["cut_reason"] and cut["rule_id"]
+    for adj in draft["adjusted"]:
+        assert adj["before"] and adj["after"] and adj["rule_id"]
 
     send = next(b for b in at.button if "카카오톡" in b.label)
     send.click().run()

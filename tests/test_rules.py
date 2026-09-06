@@ -6,6 +6,7 @@ from datetime import date, timedelta
 
 import pytest
 
+from backend.ai import extract as ai_extract
 from backend.core import protocol as proto
 from backend.core import rules
 from backend.core.schemas import (
@@ -271,3 +272,33 @@ def test_is_stalled():
         patient_id="p1", date=start + timedelta(days=21), pain=3, rom_self="눈높이"
     )
     assert rules.is_stalled(improving) is False
+
+
+# 추출이 기간을 잘못 읽으면(보조기 "8주 후 해제"의 8 등) 확인 필요로 내려야 한다
+def test_broken_timeline_is_flagged_for_review():
+    raw = [
+        {"phase": 1, "weeks": [0, 6], "brace": "상시", "allowed": [], "forbidden": [],
+         "rom_caps": [], "source_text": "Phase I (0-6주)", "confidence": 0.95},
+        {"phase": 2, "weeks": [6, 8], "brace": None, "allowed": [], "forbidden": [],
+         "rom_caps": [], "source_text": "Phase II (6-12주) 보조기 8주 후 해제", "confidence": 0.85},
+        {"phase": 3, "weeks": [12, 16], "brace": None, "allowed": [], "forbidden": [],
+         "rom_caps": [], "source_text": "Phase III", "confidence": 0.9},
+    ]
+    slots, _ = ai_extract._to_slots(raw)
+    by_phase = {s.phase: s for s in slots}
+
+    assert by_phase[1].confidence > 0.7, "정상 구간까지 내리면 안 된다"
+    assert by_phase[2].needs_review, "8주에서 끊긴 2단계가 확인 필요로 안 잡혔다"
+    assert by_phase[3].needs_review, "앞 단계와 이어지지 않는 3단계도 확인 필요다"
+
+
+def test_shifted_phase_numbering_flags_everything():
+    """1단계가 0주에서 시작하지 않으면 번호가 밀린 것 — 뒤 단계도 다 틀렸다고 봐야 한다."""
+    raw = [
+        {"phase": 1, "weeks": [6, 12], "brace": None, "allowed": [], "forbidden": [],
+         "rom_caps": [], "source_text": "", "confidence": 0.95},
+        {"phase": 2, "weeks": [12, 16], "brace": None, "allowed": [], "forbidden": [],
+         "rom_caps": [], "source_text": "", "confidence": 0.95},
+    ]
+    slots, _ = ai_extract._to_slots(raw)
+    assert all(s.needs_review for s in slots), [(s.phase, s.confidence) for s in slots]

@@ -8,66 +8,113 @@
 <style>
   :root{
     --ink:#152530; --safe:#0B6355; --warn:#9A5B0C; --alert:#A32A20; --line:#D8E0E5;
-    --bg:#FBFCFC; --muted:#5A6B75;
+    --bg:#FBFCFC; --muted:#5A6B75; --safe-soft:#F0F7F5;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);
        font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-       font-size:19px;line-height:1.6;-webkit-text-size-adjust:100%}
-  .wrap{max-width:560px;margin:0 auto;padding:20px 18px 48px}
-  header{padding:12px 0 20px;border-bottom:2px solid var(--line)}
+       font-size:19px;line-height:1.6;-webkit-text-size-adjust:100%;
+       padding-bottom:120px}
+  .wrap{max-width:560px;margin:0 auto;padding:20px 18px 0}
+
+  header{padding:10px 0 18px;border-bottom:2px solid var(--line)}
   h1{font-size:27px;margin:0 0 6px;letter-spacing:-.02em}
-  .sub{color:var(--muted);font-size:17px}
-  h2{font-size:21px;margin:32px 0 12px;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:16px}
+  .chips{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font-size:14px;padding:3px 11px;border-radius:99px;border:1px solid var(--line);
+        color:var(--muted);background:#fff}
+  .chip.warn{border-color:#EBD8B7;background:#FDF8EF;color:var(--warn);font-weight:600}
+
+  h2{font-size:21px;margin:30px 0 6px;letter-spacing:-.01em}
+  .hint{color:var(--muted);font-size:15px;margin:0 0 12px}
+
+  /* 진행률 */
+  .prog{display:flex;align-items:center;gap:12px;margin:10px 0 14px}
+  .prog .bar{flex:1;height:10px;border-radius:99px;background:#E8EEF0;overflow:hidden}
+  .prog .fill{height:100%;width:0;background:var(--safe);border-radius:99px;
+              transition:width .25s ease}
+  .prog .num{font-size:16px;font-weight:700;color:var(--safe);white-space:nowrap}
+
   .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:12px}
-  .ex{display:flex;gap:14px;align-items:flex-start;cursor:pointer}
-  .ex input{width:30px;height:30px;flex:0 0 30px;margin:2px 0 0;accent-color:var(--safe)}
+  .ex{display:flex;gap:14px;align-items:flex-start;cursor:pointer;
+      border-left:4px solid transparent;transition:border-color .15s,background .15s}
+  .ex input{width:30px;height:30px;flex:0 0 30px;margin:3px 0 0;accent-color:var(--safe)}
   .ex > span{flex:1;min-width:0;word-break:keep-all;overflow-wrap:anywhere}
   .ex-name{font-size:21px;font-weight:600;letter-spacing:-.01em}
+  .ex-rom{color:var(--muted);font-weight:400}
   .ex-dose{color:var(--safe);font-weight:600;margin-top:2px}
   .ex-desc{color:var(--muted);font-size:17px;margin-top:6px}
+  .ex.done{background:var(--safe-soft);border-left-color:var(--safe)}
   .ex.done .ex-name{color:var(--safe)}
+
   .stop{background:#FDF6F5;border-color:#EBC9C4}
+  .stop ul{margin:0;padding-left:20px}
   .stop li{margin:6px 0}
   .stop b{color:var(--alert)}
   .brace{background:#FDF8EF;border-color:#EBD8B7}
   .brace b{color:var(--warn)}
-  input[type=range]{width:100%;height:38px;accent-color:var(--safe)}
-  .painrow{display:flex;justify-content:space-between;color:var(--muted);font-size:16px}
-  .painval{font-size:34px;font-weight:700;text-align:center;letter-spacing:-.02em}
+
+  input[type=range]{width:100%;height:40px;accent-color:var(--safe)}
+  .painrow{display:flex;justify-content:space-between;color:var(--muted);font-size:15px}
+  .painval{font-size:40px;font-weight:700;text-align:center;letter-spacing:-.03em;line-height:1.1}
+  .painword{text-align:center;color:var(--muted);font-size:16px;margin-bottom:4px}
+
   .rom{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-  .rom button{background:#fff;border:2px solid var(--line);border-radius:12px;padding:10px 4px;
-              font:inherit;font-size:15px;color:var(--ink);cursor:pointer;display:grid;gap:6px;justify-items:center}
-  .rom button[aria-pressed=true]{border-color:var(--safe);background:#F0F7F5;color:var(--safe);font-weight:700}
+  .rom button{background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px 4px;
+              font:inherit;font-size:15px;color:var(--ink);cursor:pointer;display:grid;gap:6px;
+              justify-items:center;min-height:96px;align-content:center}
+  .rom button[aria-pressed=true]{border-color:var(--safe);background:var(--safe-soft);
+                                 color:var(--safe);font-weight:700}
   textarea{width:100%;min-height:84px;border:1px solid var(--line);border-radius:12px;padding:12px;
-           font:inherit;font-size:18px;resize:vertical}
+           font:inherit;font-size:18px;resize:vertical;background:#fff}
+
+  /* 하단 고정 버튼 */
+  .dock{position:fixed;left:0;right:0;bottom:0;background:rgba(251,252,252,.96);
+        border-top:1px solid var(--line);padding:12px 18px calc(12px + env(safe-area-inset-bottom));
+        backdrop-filter:blur(8px)}
+  .dock-inner{max-width:560px;margin:0 auto}
   .submit{width:100%;padding:18px;border:0;border-radius:14px;background:var(--safe);color:#fff;
-          font:inherit;font-size:21px;font-weight:700;cursor:pointer;margin-top:20px}
-  .submit:disabled{background:#9BB5AF}
-  .done-msg{background:#F0F7F5;border:1px solid var(--safe);color:var(--safe);border-radius:14px;
-            padding:18px;text-align:center;font-weight:600;margin-top:20px}
-  .alert-msg{background:#FDF6F5;border:1px solid var(--alert);color:var(--alert)}
-  footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);
-         color:var(--muted);font-size:14px;line-height:1.5}
+          font:inherit;font-size:21px;font-weight:700;cursor:pointer}
+  .submit:disabled{background:#9BB5AF;cursor:default}
+
+  .result{border-radius:14px;padding:18px;text-align:center;font-weight:600;margin-top:16px;
+          background:var(--safe-soft);border:1px solid var(--safe);color:var(--safe)}
+  .result.alert{background:#FDF6F5;border-color:var(--alert);color:var(--alert);text-align:left}
+
+  footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);
+         color:var(--muted);font-size:14px;line-height:1.55}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <h1>{{ name or "환자" }}님, 오늘의 운동</h1>
-    <div class="sub">수술 후 {{ weeks }}주 · {{ phase }}단계 · 총 {{ exercises|length }}개 · 약 {{ minutes }}분</div>
+    <div class="sub">{{ today.month }}월 {{ today.day }}일 · 총 {{ exercises|length }}개 · 약 {{ minutes }}분</div>
+    <div class="chips">
+      <span class="chip">수술 후 {{ weeks }}주</span>
+      <span class="chip">{{ phase }}단계</span>
+      {% if brace %}<span class="chip warn">보조기 착용</span>{% endif %}
+    </div>
   </header>
 
   {% if brace %}
-  <div class="card brace" style="margin-top:20px"><b>보조기</b> · {{ brace }}</div>
+  <div class="card brace" style="margin-top:18px"><b>보조기</b> · {{ brace }}</div>
   {% endif %}
 
   <h2>오늘 할 운동</h2>
+  {% if exercises %}
+  <div class="prog">
+    <div class="bar"><div class="fill" id="fill"></div></div>
+    <div class="num" id="prognum">0 / {{ exercises|length }}</div>
+  </div>
+  <p class="hint">하나씩 하시고 끝나면 왼쪽 네모를 눌러 주세요.</p>
+  {% endif %}
+
   {% for ex in exercises %}
   <label class="card ex" data-name="{{ ex.name }}">
     <input type="checkbox">
     <span>
-      <span class="ex-name">{{ ex.name }}{% if ex.rom %} <span style="color:var(--muted);font-weight:400">({{ ex.rom }}°까지)</span>{% endif %}</span>
+      <span class="ex-name">{{ ex.name }}{% if ex.rom %} <span class="ex-rom">({{ ex.rom }}°까지)</span>{% endif %}</span>
       <div class="ex-dose">{{ ex.dose }}</div>
       <div class="ex-desc">{{ ex.patient_desc }}</div>
     </span>
@@ -78,15 +125,18 @@
 
   {% if forbidden %}
   <h2>지금 하지 말아야 할 것</h2>
-  <div class="card stop"><ul style="margin:0;padding-left:20px">
+  <p class="hint">회복 중에는 이 동작들이 봉합 부위에 무리를 줍니다.</p>
+  <div class="card stop"><ul>
     {% for f in forbidden %}<li><b>{{ f }}</b></li>{% endfor %}
   </ul></div>
   {% endif %}
 
   <h2>오늘 어떠셨어요?</h2>
+
   <div class="card">
-    <div style="font-weight:600;margin-bottom:8px">통증 정도</div>
+    <div style="font-weight:600;margin-bottom:6px">통증 정도</div>
     <div class="painval" id="painval">3</div>
+    <div class="painword" id="painword">견딜 만해요</div>
     <input type="range" id="pain" min="0" max="10" value="3">
     <div class="painrow"><span>0 · 없음</span><span>10 · 매우 심함</span></div>
   </div>
@@ -94,10 +144,10 @@
   <div class="card">
     <div style="font-weight:600;margin-bottom:10px">팔이 어디까지 올라가나요?</div>
     <div class="rom" id="rom">
-      <button type="button" data-v="허리" aria-pressed="false"><svg width="34" height="44" viewBox="0 0 34 44"><circle cx="17" cy="7" r="5" fill="#152530"/><path d="M17 13v16M17 22l9 8" stroke="#152530" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M11 29l-2 12M23 29l2 12" stroke="#D8E0E5" stroke-width="3" stroke-linecap="round"/></svg>허리</button>
-      <button type="button" data-v="어깨" aria-pressed="false"><svg width="34" height="44" viewBox="0 0 34 44"><circle cx="17" cy="7" r="5" fill="#152530"/><path d="M17 13v16M17 17h10" stroke="#152530" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M11 29l-2 12M23 29l2 12" stroke="#D8E0E5" stroke-width="3" stroke-linecap="round"/></svg>어깨</button>
-      <button type="button" data-v="눈높이" aria-pressed="false"><svg width="34" height="44" viewBox="0 0 34 44"><circle cx="17" cy="7" r="5" fill="#152530"/><path d="M17 13v16M17 17l9-7" stroke="#152530" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M11 29l-2 12M23 29l2 12" stroke="#D8E0E5" stroke-width="3" stroke-linecap="round"/></svg>눈높이</button>
-      <button type="button" data-v="머리 위" aria-pressed="false"><svg width="34" height="44" viewBox="0 0 34 44"><circle cx="17" cy="10" r="5" fill="#152530"/><path d="M17 16v13M17 18l7-14" stroke="#152530" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M11 29l-2 12M23 29l2 12" stroke="#D8E0E5" stroke-width="3" stroke-linecap="round"/></svg>머리 위</button>
+      <button type="button" data-v="허리" aria-pressed="false"><svg width="34" height="44" viewBox="0 0 34 44"><circle cx="17" cy="7" r="5" fill="currentColor"/><path d="M17 13v16M17 22l9 8" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M11 29l-2 12M23 29l2 12" stroke="#D8E0E5" stroke-width="3" stroke-linecap="round"/></svg>허리</button>
+      <button type="button" data-v="어깨" aria-pressed="false"><svg width="34" height="44" viewBox="0 0 34 44"><circle cx="17" cy="7" r="5" fill="currentColor"/><path d="M17 13v16M17 17h10" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M11 29l-2 12M23 29l2 12" stroke="#D8E0E5" stroke-width="3" stroke-linecap="round"/></svg>어깨</button>
+      <button type="button" data-v="눈높이" aria-pressed="false"><svg width="34" height="44" viewBox="0 0 34 44"><circle cx="17" cy="7" r="5" fill="currentColor"/><path d="M17 13v16M17 17l9-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M11 29l-2 12M23 29l2 12" stroke="#D8E0E5" stroke-width="3" stroke-linecap="round"/></svg>눈높이</button>
+      <button type="button" data-v="머리 위" aria-pressed="false"><svg width="34" height="44" viewBox="0 0 34 44"><circle cx="17" cy="10" r="5" fill="currentColor"/><path d="M17 16v13M17 18l7-14" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M11 29l-2 12M23 29l2 12" stroke="#D8E0E5" stroke-width="3" stroke-linecap="round"/></svg>머리 위</button>
     </div>
   </div>
 
@@ -106,7 +156,6 @@
     <textarea id="note" placeholder="예: 어깨 올릴 때 조금 뻐근해요"></textarea>
   </div>
 
-  <button class="submit" id="submit">오늘 기록 보내기</button>
   <div id="result"></div>
 
   <footer>
@@ -116,15 +165,37 @@
   </footer>
 </div>
 
+<div class="dock" id="dock">
+  <div class="dock-inner">
+    <button class="submit" id="submit">오늘 기록 보내기</button>
+  </div>
+</div>
+
 <script>
 const TOKEN = {{ token|tojson }};
+const TOTAL = {{ exercises|length }};
+const PAIN_WORDS = ["없어요","거의 없어요","조금 있어요","견딜 만해요","조금 불편해요",
+                    "불편해요","꽤 아파요","많이 아파요","심해요","매우 심해요","참기 어려워요"];
 let rom = null;
 
-document.querySelectorAll(".ex input").forEach(cb =>
-  cb.addEventListener("change", e => e.target.closest(".ex").classList.toggle("done", e.target.checked)));
+function refresh() {
+  const done = document.querySelectorAll(".ex input:checked").length;
+  const num = document.getElementById("prognum");
+  const fill = document.getElementById("fill");
+  if (num) num.textContent = `${done} / ${TOTAL}`;
+  if (fill) fill.style.width = TOTAL ? `${(done / TOTAL) * 100}%` : "0";
+}
+
+document.querySelectorAll(".ex input").forEach(cb => cb.addEventListener("change", e => {
+  e.target.closest(".ex").classList.toggle("done", e.target.checked);
+  refresh();
+}));
 
 const pain = document.getElementById("pain");
-pain.addEventListener("input", () => document.getElementById("painval").textContent = pain.value);
+pain.addEventListener("input", () => {
+  document.getElementById("painval").textContent = pain.value;
+  document.getElementById("painword").textContent = PAIN_WORDS[+pain.value];
+});
 
 document.querySelectorAll("#rom button").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll("#rom button").forEach(x => x.setAttribute("aria-pressed", "false"));
@@ -134,6 +205,7 @@ document.querySelectorAll("#rom button").forEach(b => b.addEventListener("click"
 
 document.getElementById("submit").addEventListener("click", async (e) => {
   e.target.disabled = true;
+  e.target.textContent = "보내는 중…";
   const completed = [...document.querySelectorAll(".ex")]
     .filter(el => el.querySelector("input").checked).map(el => el.dataset.name);
   const res = await fetch("/api/feedback", {
@@ -144,14 +216,18 @@ document.getElementById("submit").addEventListener("click", async (e) => {
   const data = await res.json();
   const box = document.getElementById("result");
   if (data.red_flag) {
-    box.className = "done-msg alert-msg";
-    box.innerHTML = "기록이 전송되었습니다.<br>적어주신 증상은 확인이 필요합니다. <b>병원에 연락해 주세요.</b>";
+    box.className = "result alert";
+    box.innerHTML = "기록이 전송되었습니다.<br><br>적어주신 증상은 확인이 필요합니다. "
+                  + "<b>오늘 운동은 멈추시고 수술받으신 병원에 연락해 주세요.</b>";
   } else {
-    box.className = "done-msg";
-    box.textContent = "오늘 기록이 전송되었습니다. 수고하셨습니다.";
+    box.className = "result";
+    box.textContent = `오늘 기록이 전송되었습니다. ${completed.length}개 완료하셨어요. 수고하셨습니다.`;
   }
-  e.target.style.display = "none";
+  document.getElementById("dock").style.display = "none";
+  box.scrollIntoView({behavior: "smooth", block: "center"});
 });
+
+refresh();
 </script>
 </body>
 </html>

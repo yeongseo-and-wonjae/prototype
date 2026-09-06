@@ -70,7 +70,7 @@ rehabtalk/
 ├─ CLAUDE.md
 ├─ .env                        UPSTAGE_API_KEY / ANTHROPIC_API_KEY (절대 커밋 금지)
 ├─ frontend/                   Streamlit — 치료사용
-│   ├─ app.py                  환자 목록
+│   ├─ 환자_목록.py            진입 화면 (환자 목록)
 │   └─ pages/
 │       ├─ 1_프로토콜.py
 │       ├─ 2_처방.py
@@ -234,7 +234,10 @@ def is_stalled(feedback_history) -> bool     # 정체 감지 (N주 이상)
 ### ai/extract.py
 **책임**: 프로토콜 사진 → `list[ProtocolSlot]`.
 Upstage에서는 **Document Parse로 표 구조를 먼저 뽑고** 그 텍스트를 Solar에 넘겨 구조화한다(한국어 표에 강함). Anthropic에서는 vision으로 직접 읽는다.
-JSON 스키마를 서버가 강제하되 **출력을 그대로 믿지 않는다** — `_to_slot()`에서 열린 구간(`-1`→`999`), 각도 아닌 항목(`"제한 없음" -1°`)을 정리하고 버린 값이 있으면 confidence를 내린다. 검증 실패 시 1회 재시도.
+JSON 스키마를 서버가 강제하되 **출력을 그대로 믿지 않는다.**
+`_to_slot()`에서 열린 구간(`-1`→`999`)과 각도 아닌 항목(`"제한 없음" -1°`)을 정리하고, 쉼표로 뭉쳐 온 목록을 항목별로 쪼갠다.
+`_flag_broken_timeline()`은 단계 기간이 이어지는지 본다 — 모델이 보조기 문구("8주 후 해제")의 숫자를 기간으로 잘못 읽는 일이 있고, **자신 있게 틀리기도 한다.** 값을 고치지 않고 confidence를 내려 치료사에게 넘긴다. 1단계가 0주에서 시작하지 않으면 번호가 밀린 것으로 보고 전 단계를 확인 대상으로 올린다.
+검증 실패 시 1회 재시도.
 **읽지 못한 칸은 비워두고 confidence를 낮춘다.** 원문 근거를 `source_text`에 남겨 확인 화면에서 대조 가능하게.
 
 ### ai/draft.py

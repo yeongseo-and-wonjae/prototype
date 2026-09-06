@@ -1,0 +1,18 @@
+# 화면 톤을 고정한다. 브라우저가 다크 모드여도 색이 뒤집히지 않게.
+[theme]
+base = "light"
+primaryColor = "#0B6355"          # safe
+backgroundColor = "#FBFCFC"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#152530"             # ink
+font = "sans-serif"
+
+[client]
+toolbarMode = "minimal"
+showErrorDetails = true
+
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false
