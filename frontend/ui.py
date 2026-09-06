@@ -35,6 +35,15 @@ CSS = f"""
   .rt-head .name {{ font-size:1.55rem; font-weight:700; letter-spacing:-.02em; }}
   .rt-head .meta {{ color:{MUTED}; font-size:.92rem; }}
 
+  /* ── 진행 표시 ────────────────────────────────────── */
+  .rt-steps {{ display:flex; align-items:center; gap:6px; margin:-4px 0 18px;
+               font-size:.83rem; color:{MUTED}; flex-wrap:wrap; }}
+  .rt-steps .s {{ display:inline-flex; align-items:center; gap:6px;
+                  padding:4px 12px; border:1px solid {LINE}; border-radius:99px; background:#fff; }}
+  .rt-steps .s.now  {{ border-color:{SAFE}; background:#F0F7F5; color:{SAFE}; font-weight:700; }}
+  .rt-steps .s.done {{ border-color:#BFDBD4; color:{SAFE}; }}
+  .rt-steps .arrow {{ color:{LINE}; }}
+
   /* ── 카드 ─────────────────────────────────────────── */
   .rt-card {{ border:1px solid {LINE}; border-left:3px solid {LINE}; border-radius:10px;
               padding:12px 15px; margin-bottom:9px; background:#fff; }}
@@ -151,6 +160,29 @@ def card(body: str, tone: str = "flat") -> None:
 
 def tag(text: str, tone: str = "") -> str:
     return f'<span class="rt-tag {tone}">{text}</span>'
+
+
+STEPS = [("환자", None),
+         ("프로토콜", "pages/1_프로토콜.py"),
+         ("처방", "pages/2_처방.py"),
+         ("인박스", "pages/3_인박스.py")]
+
+
+def steps(current: str) -> None:
+    """지금 어디쯤인지 늘 보이게 한다. 사이드바를 뒤지지 않아도 되도록."""
+    index = [name for name, _ in STEPS].index(current)
+    cells = []
+    for i, (name, _) in enumerate(STEPS):
+        cls = "now" if i == index else ("done" if i < index else "")
+        cells.append(f'<span class="s {cls}">{i + 1} {name}</span>')
+    st.markdown('<div class="rt-steps">'
+                + '<span class="arrow">→</span>'.join(cells)
+                + '</div>', unsafe_allow_html=True)
+
+
+def go(page: str) -> None:
+    """다음 화면으로 넘긴다."""
+    st.switch_page(page)
 
 
 def weeks_label(weeks) -> str:

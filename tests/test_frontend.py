@@ -38,7 +38,7 @@ def run(path: str) -> AppTest:
 def test_patient_list_renders():
     at = run("frontend/환자_목록.py")
     assert "환자 목록" in at.title[0].value
-    assert len(at.button) >= 3                      # 환자마다 '열기' 버튼
+    assert len(at.button) >= 3                      # 환자마다 다음 화면으로 가는 버튼
 
 
 def test_protocol_page_needs_patient():
@@ -47,12 +47,10 @@ def test_protocol_page_needs_patient():
 
 
 def test_plan_page_draft_and_send():
-    at = AppTest.from_file(str(ROOT / "frontend/pages/2_처방.py"), default_timeout=120)
+    """화면에 들어오면 초안이 알아서 만들어진다 — 버튼을 누르지 않는다."""
+    at = AppTest.from_file(str(ROOT / "frontend/pages/2_처방.py"), default_timeout=180)
     at.session_state["patient"] = requests.get(f"{API}/api/patients").json()["patients"][0]
     at.run()
-    assert not at.exception, at.exception
-
-    at.button[0].click().run()                      # AI 초안 만들기
     assert not at.exception, at.exception
 
     draft = at.session_state["draft"]["draft"]
@@ -65,7 +63,9 @@ def test_plan_page_draft_and_send():
     for adj in draft["adjusted"]:
         assert adj["before"] and adj["after"] and adj["rule_id"]
 
-    send = next(b for b in at.button if "카카오톡" in b.label)
+    assert at.session_state["cart"], "안전한 항목이 미리 담기지 않았습니다"
+
+    send = next(b for b in at.button if "적용하기" in b.label)
     send.click().run()
     assert not at.exception, at.exception
     assert at.session_state["sent"]["count"] > 0

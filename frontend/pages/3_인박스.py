@@ -9,6 +9,7 @@ import ui
 ui.setup("인박스")
 
 st.title("인박스")
+ui.steps("인박스")
 st.caption("정체 감지 · 적신호 · 환자 질문이 모입니다. 최종 결정과 발송은 치료사가 합니다.")
 
 if st.button("새로 고침"):

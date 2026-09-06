@@ -9,7 +9,8 @@ import ui
 ui.setup("환자 목록")
 
 st.title("환자 목록")
-st.caption("환자를 열고 프로토콜 → 처방 순서로 진행합니다.")
+ui.steps("환자")
+st.caption("환자를 열면 다음 화면으로 바로 넘어갑니다.")
 ui.health_badge()
 st.write("")
 
@@ -38,18 +39,13 @@ for i, p in enumerate(patients):
             f'<div class="rt-sub" style="margin-top:2px">수술일 {p["surgery_date"]}</div>',
             "ok" if selected else "flat",
         )
-        if st.button(
-            "선택됨" if selected else "이 환자 열기",
-            key=f"open-{p['id']}",
-            use_container_width=True,
-            type="primary" if selected else "secondary",
-        ):
+        # 프로토콜이 이미 확정된 환자는 처방으로 바로 보낸다 — 한 단계 건너뛴다
+        target = "pages/2_처방.py" if p["protocol_reviewed_by"] else "pages/1_프로토콜.py"
+        label = "처방하기 →" if p["protocol_reviewed_by"] else "프로토콜 확인 →"
+        if st.button(label, key=f"open-{p['id']}", use_container_width=True, type="primary"):
             st.session_state["patient"] = p
-            for stale in ("draft", "sent", "protocol", "started_at", "inbox"):
+            for stale in ("draft", "sent", "protocol", "started_at", "inbox", "cart"):
                 st.session_state.pop(stale, None)
-            st.rerun()
-
-if "patient" in st.session_state:
-    st.success(f"**{st.session_state['patient']['name']}** 선택됨 — 왼쪽 메뉴에서 이어서 진행하세요.")
+            ui.go(target)
 
 ui.footer()

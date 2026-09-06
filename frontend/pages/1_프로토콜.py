@@ -10,20 +10,25 @@ ui.setup("프로토콜")
 patient = ui.require_patient()
 
 st.title("프로토콜 확인")
+ui.steps("프로토콜")
 ui.patient_header(patient)
 
 photo = st.file_uploader("병원에서 받아온 프로토콜 사진", type=["png", "jpg", "jpeg", "webp"])
 
-if st.button("AI로 6칸 추출", type="primary", disabled=photo is None):
+# 사진을 올리면 바로 읽는다 — 버튼을 한 번 더 누르지 않게
+if photo is not None and st.session_state.get("protocol_photo") != photo.name:
     with st.spinner("사진에서 단계·기간·보조기·허용·금지·각도상한을 읽는 중"):
         st.session_state["protocol"] = ui.api(
             "POST", "/api/protocol/extract",
             data={"patient_id": patient["id"]},
             files={"image": (photo.name, photo.getvalue(), photo.type)})
+    st.session_state["protocol_photo"] = photo.name
 
 if "protocol" not in st.session_state:
-    st.info("사진을 올리고 **AI로 6칸 추출**을 누르세요. "
+    st.info("병원에서 받아온 프로토콜 사진을 올리면 바로 읽습니다. "
             "샘플은 `data/sample_protocol.png` 에 있습니다.")
+    if st.button("사진 없이 표준본으로 처방하기 →", use_container_width=False):
+        ui.go("pages/2_처방.py")
     ui.footer()
     st.stop()
 
@@ -94,12 +99,12 @@ with right:
     reviewer = who.text_input("확인한 치료사", "박지현 PT")
     hospital = where.text_input("병원", protocol.get("hospital") or "OO정형외과")
 
-    if st.button("맞음 — 이 값으로 확정", type="primary", use_container_width=True):
+    if st.button("맞음 — 확정하고 처방하기 →", type="primary", use_container_width=True):
         confirmed = ui.api("PUT", f"/api/protocol/{protocol['id']}",
                            json={"slots": edited, "reviewed_by": reviewer, "hospital": hospital})
         st.session_state["protocol"]["protocol"] = confirmed["protocol"]
         st.session_state.pop("draft", None)
-        st.success(f"확정되었습니다 (v{confirmed['protocol']['version']}). "
-                   "왼쪽 **처방** 화면으로 넘어가세요.")
+        st.session_state.pop("cart", None)
+        ui.go("pages/2_처방.py")
 
 ui.footer()
